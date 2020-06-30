@@ -1,0 +1,8 @@
+# RUNNING TESTS
+coverage run -m pytest
+python -m pytest -s tests/test_file.py
+
+# COVERAGE
+coverage erase
+coverage run -m pytest
+coverage html

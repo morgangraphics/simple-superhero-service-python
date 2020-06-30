@@ -73,7 +73,7 @@ DC URL: [https://localhost:5000/dc](https://localhost:5000/dc)
 
 Swagger Interface: [https://localhost:5000/swagger/#](https://localhost:5000/swagger/#)
 
-* 
+* Do the same for `development.example.cfg` and `productions.example.cfg` if you want to override environment specific variables
 
 
 ## Dataset
