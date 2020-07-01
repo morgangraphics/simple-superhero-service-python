@@ -9,8 +9,8 @@ class ServiceUtils:
     def direction(val):
         """
         Internal Method that determines sort direction reverse=False|True
-        :param val:
-        :return:
+        :param val: asc or dsc
+        :return: Boolean
         """
         return False if val == "asc" else True
 
@@ -34,10 +34,10 @@ class ServiceUtils:
     @staticmethod
     def permutate(names):
         """
-        Will attempt to make perumtations on names passed in so empty result sets are limited
+        Will attempt to make permutations on names passed in so empty result sets are limited
         e.g. spider man, spider-man, spiderman
         :param names: (str) Character names
-        :return: (list) List of character name perumtations
+        :return: (list) List of character name permutations
         """
         options = list()
         characters = [names]

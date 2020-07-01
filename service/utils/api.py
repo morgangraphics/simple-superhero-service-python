@@ -3,7 +3,11 @@ from . import ServiceUtils
 
 class ApiUtils(ServiceUtils):
     def __init__(self):
+        """
+        Inheritance here is probably not needed but done for testing out the idea
+        """
         super().__init__()
+
         self.cols = """
              |         |          | Variable          | Definition
              |         |          | ------------------|----------------
@@ -21,6 +25,8 @@ class ApiUtils(ServiceUtils):
              |         |          | first appearance  | The month and year of the character’s first appearance in a comic book, if available
              |         |          | year              | The year of the character’s first appearance in a comic book, if available
              |         |          |"""
+
+        self.config = ""
 
         self.doc_params = {
             "marvel": {
@@ -51,8 +57,8 @@ class ApiUtils(ServiceUtils):
   seed       | seed    | false    | Keep the same random characters on multiple requests
           
           
-          * (as of Sep. 2, 2014. Number will become increasingly out of date as time goes on)
-          † Does not apply when sorting on column/header which contains a null value, records with null values are removed
+    * (as of Sep. 2, 2014. Number will become increasingly out of date as time goes on)
+    † Does not apply when sorting on column/header which contains a null value, records with null values are removed
         """
 
     def help_search(self, universe):
@@ -66,23 +72,12 @@ class ApiUtils(ServiceUtils):
              |         |          | {{keyword1}},{{keyword2}} e.g. {self.doc_params.get(universe)["characters"][0]},{self.doc_params.get(universe)["characters"][1]} will search for each character individually
              |         |          | {{keyword1}}+{{keyword2}} e.g. {self.doc_params.get(universe)["search"][0]}+{self.doc_params.get(universe)["search"][1]} will search for a character name with both '{self.doc_params.get(universe)["search"][0]}' AND '{self.doc_params.get(universe)["search"][1]}' in it
              |         |          | {{keyword1}},-{{keyword2}} e.g. {self.doc_params.get(universe)["characters"][0]},{self.doc_params.get(universe)["exclude"]} will search for character names containing '{self.doc_params.get(universe)["characters"][0]}' EXCLUDING results with {self.doc_params.get(universe)["exclude"]} in it
-             |         |          |
-  format     | format  | json     | Output format (currently only JSON)
-  headers    | h       | all      | Available Columns (page_id, name, urlslug, id, align, eye, hair, sex, gsm, alive, appearances, first appearance, year)
-             |         |          | {self.cols}
-  help       | help    | false    | Display Help
-  limit      | limit   | 100      | Limit results ( 0 = unlimited)
-  nulls      | nulls   | first    | null values sorted first or last e.g. [null, 1, 2, 3] or [1, 2, 3, null] † 
-  pretty     | pretty  | false    | Pretty print JSON results
-  prune      | prune   | false    | Remove null values from output
-  sort       | s       | unsorted | Sort response asc|desc e.g. s=name,appearances:desc
-
-† Does not apply when sorting on column/header which contains a null value, records with null values are removed
+             |         |          |{self.help_base}
 """
 
     def handle_config(self, args):
         """
-        Normalize configuration object used for retrieving data
+        Normalize configuration dict used for retrieving data
         :param args: (dict) of arguments passed in via GET Querystring, or POST JSON
         :return: (dict) Normalized configuration dictionary
         """
@@ -126,7 +121,9 @@ class ApiUtils(ServiceUtils):
             config["seed"] = True if (args.get("seed") in present) else False
 
         config["universe"] = args.get("universe")
-        print("ARGS = ", args, "CONFIG = ", config)
+
+        self.config = config
+
         return config
 
     def character_search_dict(self, characters):
@@ -153,9 +150,21 @@ class ApiUtils(ServiceUtils):
                 search["some"] = search["some"] + chars
         return search
 
+    def show_help(self):
+        """
+        Helper method to display help text
+        :return: (text) Text based help
+        """
+        if not self.config.get("characters"):
+            return self.help_base
+        else:
+            return self.help_search(self.config.get("universe"))
+
+
+
     def sort_dict(self, sort_str):
         """
-        SortObject converts a specially formatted query param into an array of objects
+        Method converts a specially formatted query param into a list of dictionaries
         s=name,appearances:desc becomes
         [{
            "column": "name",

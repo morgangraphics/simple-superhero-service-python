@@ -1,5 +1,5 @@
-import json
 from flask import Blueprint
+from flask import json
 from flask import request
 from flask import Response
 from markupsafe import escape
@@ -31,12 +31,12 @@ def dc(characters=None):
     if not request.args.get("universe"):
         options.update({"universe": "dc"})
 
+    config = api.handle_config(options)
+
     if request.args.get("help") or request.args.get("help") == "":
-        hlp = api.help_base if not options.get("characters") else api.help_search("dc")
-        return Response(hlp, mimetype="text/plain")
+        return Response(api.show_help(), mimetype="text/plain")
 
     else:
-        config = api.handle_config(options)
 
         try:
             data = ReadFile(config).get_data()

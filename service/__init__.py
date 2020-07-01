@@ -35,7 +35,7 @@ def create_app(test_config=None, **kwargs):
         environment_yaml_path = path
 
     if test_config is None:
-        # Will load Environment Variables from .env file
+        # Will load Environment Variables from .env file if needed and exists
         app.config.from_pyfile("settings.py", silent=False)
         # Will load default application variables
         app.config.from_pyfile(default_yaml_path, silent=False)

@@ -1,5 +1,5 @@
 from flask import Blueprint
-import json
+from flask import json
 
 """
 Simple Health check route
