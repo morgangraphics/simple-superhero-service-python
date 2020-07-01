@@ -273,7 +273,7 @@ def test_filter_limit_unlimited(config, common_data):
                 "h": ["name", "year", "sex"],
                 "help": False,
                 "limit": 100,
-                "nulls": "false",
+                "nulls": "first",
                 "pretty": False,
                 "prune": False,
                 "universe": "marvel",
@@ -299,7 +299,7 @@ def test_sort_results_name(config, expected, common_data):
                 "s": [{"column": "value", "sort": False}],
             },
             {"name": "Zero", "value": 0},
-            (False, True, 0),
+            (True, True, 0),
         ),
         (
             {
@@ -309,7 +309,7 @@ def test_sort_results_name(config, expected, common_data):
                 "s": [{"column": "value", "sort": False}],
             },
             {"name": "Sort_False_None", "value": None},
-            (True, True, None),
+            (False, True, None),
         ),
         (
             {

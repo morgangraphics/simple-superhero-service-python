@@ -28,8 +28,6 @@ def marvel(characters=None):
     if request.method == "POST":
         options.update(request.json)
 
-    print("OPTIONS ========", options, request.args.get("help"))
-
     if not request.args.get("universe"):
         options.update({"universe": "marvel"})
 

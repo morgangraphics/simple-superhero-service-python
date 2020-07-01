@@ -36,8 +36,6 @@ class ReadFile:
         e = self.config["characters"].get("every")
         x = self.config["characters"].get("exclude")
 
-        print(self.config["characters"])
-
         for character in data:
             if (
                 (len(s) > 0 and any(item in character.get("name") for item in s))
@@ -115,7 +113,7 @@ class ReadFile:
         6. Optional: Prune all None(null) values
         7. Ensure that row is removed if sorting and prune are defined and sorting key is null
         8. Pass to Filter function which will data set based on parameters passed in
-        :return: (list) List of Comic Characters which meet the requirements
+        :return: (list) List of dictionaries of Characters which meet the requirements
         """
         type_map = {"page_id": int, "appearances": int, "year": int}
 
@@ -209,14 +207,28 @@ class ReadFile:
         return results
 
     def sort_i18n_str(self, row, direction):
+        """
+        in the direction list - sort = True|False is referring to reverse in the python sort method
+        :param row: (dict) dictionary with keys sort on
+        :param direction: (dict) sort list e.g. [{'column': 'eye', 'sort': False}]
+        :return:
+        """
         itm = row[direction["column"]]
 
         if itm is not None and isinstance(itm, str):
             itm = locale.strxfrm(row[direction["column"]])
 
+        # Sorting None must also survive sort direction (asc|desc) or reverse=True|False
         if self.config.get("nulls") == "first" and not self.config.get("prune"):
-            srt_tpl = (itm is None, itm != "", itm)
+            # if sort = False (meaning reverse=False meaning sort = ASC = A => Z)
+            if not direction["sort"]:
+                srt_tpl = (itm is not None, itm != "", itm)
+            else:
+                srt_tpl = (itm is None, itm != "", itm)
         else:
-            srt_tpl = (itm is not None, itm != "", itm)
+            if not direction["sort"]:
+                srt_tpl = (itm is None, itm != "", itm)
+            else:
+                srt_tpl = (itm is not None, itm != "", itm)
 
         return srt_tpl
