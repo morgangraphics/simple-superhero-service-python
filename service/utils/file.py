@@ -202,33 +202,32 @@ class ReadFile:
         srt_dict = srt_ordr if srt_ordr is not None else self.config.get("s")
 
         for i in reversed(srt_dict):
-            results.sort(key=lambda itm: self.sort_i18n_str(itm, i), reverse=i["sort"])
+            def sort_i18n_str(row):
+                """
+                A closure to make debugging thins a little easier to debug than a lambda function
+                in the direction list - sort = True|False is referring to reverse in the python sort method
+                :param row: (dict) dictionary with keys sort on
+                :return:
+                """
+                itm = row[i["column"]]
+
+                if itm is not None and isinstance(itm, str):
+                    itm = locale.strxfrm(row[i["column"]])
+
+                # Sorting None must also survive sort direction (asc|desc) or reverse=True|False
+                if self.config.get("nulls") == "first" and not self.config.get("prune"):
+                    # if sort = False (meaning reverse=False meaning sort = ASC = A => Z)
+                    if not i["sort"]:
+                        srt_tpl = (itm is not None, itm != "", itm)
+                    else:
+                        srt_tpl = (itm is None, itm != "", itm)
+                else:
+                    if not i["sort"]:
+                        srt_tpl = (itm is None, itm != "", itm)
+                    else:
+                        srt_tpl = (itm is not None, itm != "", itm)
+
+                return srt_tpl
+            results.sort(key=sort_i18n_str, reverse=i["sort"])
 
         return results
-
-    def sort_i18n_str(self, row, direction):
-        """
-        in the direction list - sort = True|False is referring to reverse in the python sort method
-        :param row: (dict) dictionary with keys sort on
-        :param direction: (dict) sort list e.g. [{'column': 'eye', 'sort': False}]
-        :return:
-        """
-        itm = row[direction["column"]]
-
-        if itm is not None and isinstance(itm, str):
-            itm = locale.strxfrm(row[direction["column"]])
-
-        # Sorting None must also survive sort direction (asc|desc) or reverse=True|False
-        if self.config.get("nulls") == "first" and not self.config.get("prune"):
-            # if sort = False (meaning reverse=False meaning sort = ASC = A => Z)
-            if not direction["sort"]:
-                srt_tpl = (itm is not None, itm != "", itm)
-            else:
-                srt_tpl = (itm is None, itm != "", itm)
-        else:
-            if not direction["sort"]:
-                srt_tpl = (itm is None, itm != "", itm)
-            else:
-                srt_tpl = (itm is not None, itm != "", itm)
-
-        return srt_tpl
