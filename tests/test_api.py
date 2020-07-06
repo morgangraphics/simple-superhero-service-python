@@ -153,6 +153,21 @@ def test_help_search(universe, character):
     api = ApiUtils().help_search(universe)
     assert character in api
 
+@pytest.mark.parametrize(
+        ("endpoint", "expected"), [("/marvel", "nulls"), ("/dc", "help")],
+    )
+def test_show_help_no_characters(client, endpoint, expected):
+    response = client.get(f"{endpoint}/?help")
+    data = response.data.decode("utf8")
+    assert expected in data
+
+@pytest.mark.parametrize(
+    ("endpoint", "character"), [("/marvel/", "spider-man"), ("/dc/", "batman")],
+)
+def test_show_help_with_characters(client, endpoint, character):
+    response = client.get(f"{endpoint}/{character}/?help")
+    data = response.data.decode("utf8")
+    assert character in data
 
 @pytest.mark.parametrize(
     ("sort_str", "expected"),
