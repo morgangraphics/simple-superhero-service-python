@@ -52,7 +52,7 @@ The service itself and the data contained within service may be useful for testi
 
 ## Service
 
-![Simple Superhero Service](img/swagger.png)
+![Simple Superhero Service](https://github.com/morgangraphics/simple-superhero-service-python/img/swagger.png)
 
 #### Requirements
 Python 3.6+
@@ -62,8 +62,8 @@ Flask 1.1+
 1. Clone the repo `git clone https://github.com/morgangraphics/simple-superhero-service-python.git`
 1. cd into the directory and install the requirements `pip install -r requirements.txt` or `pip3 install -r requirements.txt`
 1. Generate a self signed cert `openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out sssp-cert.pem -keyout sssp-key.pem -days 365`
-1. Rename the `config/default.example.cfg` file to `config/default.cfg`\*
-1. Update the ``<PLACEHOLDERS>`` according to your setup
+1. Rename the `config/default.example.cfg` file to `config/default.cfg` and update the ``<PLACEHOLDERS>`` according to your setup (see below)\*
+1. OR Update the `.flaskenv` file according to your setup if you plan to use the Flask CLI
 1. You can run service via the Flask CLI `export FLASK_APP=main.py && flask run` or in a venv `./simple-superhero-service-python/venv/bin/flask run` or with plain ole python `export FLASK_APP=main.py && python -m flask run`
 1. The self-signed certs will make the browser throw a `Potential Security Risk` error. Select the Advanced button/link and `Accept the risk and continue` button/link
 
@@ -73,7 +73,7 @@ DC URL: [https://localhost:5000/dc](https://localhost:5000/dc)
 
 Swagger Interface: [https://localhost:5000/swagger/#](https://localhost:5000/swagger/#)
 
-* 
+* :warning: This ONLY applies to when running Flask like `export FLASK_APP=main.py && python -m flask run` Do the same for `development.example.cfg` and `productions.example.cfg` if you want to override environment specific variables
 
 
 ## Dataset

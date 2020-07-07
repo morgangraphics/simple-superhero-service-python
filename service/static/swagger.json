@@ -1,0 +1,1300 @@
+{
+ "openapi": "3.0.0",
+  "basePath": "/",
+  "schemes": [
+    "https"
+  ],
+  "info": {
+    "title": "Simple Superhero Service API Documentation",
+    "version": "0.0.1",
+    "description": "I needed a self-contained data service (no Database) for testing a number of different scenarios with a diverse and robust dataset that also contains some sparseness.\n\n  Service runs on Node and hapijs.\n\n  The service itself and the data contained within service is useful for testing:\n\n  1. CORS configuration\n  1. Server configuration\n  1. Bandwidth\n  1. Form population\n  1. Data visualization\n  1. Stubbing out UI components\n  ...\n\n  Data is the comic book character dataset from [fivethrityeight](https://datahub.io/five-thirty-eight/comic-characters#readme)",
+    "contact": {
+      "name": "MORGANGRAPHICS",
+      "url": "https://github.com/morgangraphics"
+    }
+  },
+  "tags": [],
+  "paths": {
+    "/dc": {
+      "get": {
+        "summary": "Filterable response of DC Character Universe Biographical information",
+        "operationId": "getDc",
+        "description": "Returns an array of JSON objects of DC Character Universe Biographical Information as found from\n           https://datahub.io/five-thirty-eight/comic-characters\n           dataset<br/><br/>Shorthand query syntax is available for help, pretty, prune, random and seed. Meaning their presence equates to true<br/><br/> e.g. <code>?pretty&random</code> and <code>?pretty=true&random=true</code> are functionally equivalent<br/><br/><sup>* Swagger parameter functionality below only allows for `?pretty=true|false` formatting for \"Try it out\" button</sup>",
+        "parameters": [
+          {
+            "type": "string",
+            "enum": [
+              "json"
+            ],
+            "name": "format",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "string",
+            "description": "Character(s) to search for",
+            "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*",
+            "optional": [
+              "String"
+            ],
+            "x-alternatives": [
+              {
+                "type": "string",
+                "description": "Character(s) to search for",
+                "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*"
+              }
+            ],
+            "name": "characters",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Headers to display",
+            "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*",
+            "optional": [
+              "String"
+            ],
+            "x-alternatives": [
+              {
+                "type": "string",
+                "description": "Headers to display",
+                "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*"
+              }
+            ],
+            "name": "h",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "description": "List available options. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "help",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "integer",
+            "description": "Limit result set. '0' for no limit",
+            "default": 100,
+            "minimum": 0,
+            "name": "limit",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "boolean",
+            "description": "Sort null values first or last in order. No default value is required, presence equates to true",
+            "enum": [
+              "first",
+              "last"
+            ],
+            "name": "nulls",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "boolean",
+            "description": "Pretty print the result set. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "pretty",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "boolean",
+            "description": "Remove keys with null values. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "prune",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "boolean",
+            "description": "Returns array of random characters based on limit. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "random",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "string",
+            "description": "Columns to sort on",
+            "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*:(a|de)sc",
+            "optional": [
+              "s: string representation of sort object"
+            ],
+            "x-alternatives": [
+              {
+                "type": "string",
+                "description": "Columns to sort on",
+                "example": {
+                  "value": "s=name:asc"
+                },
+                "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*:(a|de)sc"
+              },
+              {
+                "type": "array",
+                "description": "Columns to sort on. Either a string or Array of strings",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "column": {
+                      "type": "string",
+                      "enum": [
+                        "name",
+                        "page_id",
+                        "urlslug",
+                        "id",
+                        "align",
+                        "eye",
+                        "hair",
+                        "sex",
+                        "gsm",
+                        "alive",
+                        "appearances",
+                        "first appearance",
+                        "year"
+                      ]
+                    },
+                    "sort": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "column",
+                    "sort"
+                  ],
+                  "name": "s: sort object"
+                },
+                "collectionFormat": "multi",
+                "name": "s: array of sort objects"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "column": {
+                    "type": "string",
+                    "enum": [
+                      "name",
+                      "page_id",
+                      "urlslug",
+                      "id",
+                      "align",
+                      "eye",
+                      "hair",
+                      "sex",
+                      "gsm",
+                      "alive",
+                      "appearances",
+                      "first appearance",
+                      "year"
+                    ]
+                  },
+                  "sort": {
+                    "type": "string",
+                    "enum": [
+                      "asc",
+                      "desc"
+                    ]
+                  }
+                },
+                "required": [
+                  "column",
+                  "sort"
+                ],
+                "name": "s: sort object"
+              }
+            ],
+            "name": "s",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "description": "Keep the same random characters on multiple requests. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "seed",
+            "in": "query",
+            "required": false
+          }
+        ],
+        "tags": [
+          "dc"
+        ],
+        "responses": {
+          "default": {
+            "schema": {
+              "type": "string"
+            },
+            "description": "Successful"
+          }
+        }
+      },
+      "post": {
+        "summary": "Search for specific DC Universe Character(s)",
+        "operationId": "postDc",
+        "description": "Returns an array of JSON objects of DC Character Biographical Information as found from\n           https://datahub.io/five-thirty-eight/comic-characters\n           dataset<br/><br/>Shorthand query syntax is available for help, pretty, and prune. Meaning their presence equates to true<br/><br/> e.g. <code>?pretty</code> and <code>?pretty=true</code> are functionally equivalent<br/><br/>**character: character filters can used like:**<br/><br/>{keyword1},{keyword2} e.g. superman,batman will search for each character individually<br/><br/>{keyword1}+{keyword2} e.g. bat+man will search for a character name with both 'bat' AND 'man' in it<br/><br/>{keyword1},-{keyword2} e.g. superman,-woman will search for character names containing 'superman' EXCLUDING results with -woman in it<br/><br/>\n**character: character can be a string, or an array of strings (preferred)** e.g.\n  <pre><code>\n   {\n     \"character\": \"spider-man,iron man\"\n   }\n   OR\n   {\n     \"character\": [\"spider-man\", \"iron man\"]\n   }\n  </code></pre>\n**h: h can be a string, or an array (preferred)** e.g.\n  <pre><code>\n   {\n     \"h\": \"name,appearances,year\"\n   }\n   OR\n   {\n     \"h\": [\"name\", \"appearances\", \"year\"]\n   }\n  </code></pre>\n**s: can be a string, an object, array of strings, or an array of objects (preferred)** e.g.\n  <pre><code>\n  {\n    \"s\": \"name:asc,appearances:desc\"\n  }\n  OR\n  {\n    \"s\": {\n       \"column\": \"name\",\n       \"sort\": \"asc\"\n     }\n  }\n  OR\n  {\n    \"s\": [\"name:asc\", \"appearances:desc\"]\n  }\n  OR\n  {\n    \"s\": [\n      { \"column\": \"name\", \"sort\": \"asc\" },\n      { \"column\": \"appearances\", \"sort\": \"desc\" }\n    ]\n  }\n </code></pre>\n",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/body"
+            }
+          }
+        ],
+        "tags": [
+          "dc"
+        ],
+        "responses": {
+          "default": {
+            "schema": {
+              "type": "string"
+            },
+            "description": "Successful"
+          }
+        }
+      }
+    },
+    "/healthcheck": {
+      "get": {
+        "summary": "Test if the Service is up",
+        "operationId": "getHealthcheck",
+        "description": "",
+        "tags": [
+          "healthcheck"
+        ],
+        "responses": {
+          "default": {
+            "schema": {
+              "type": "string"
+            },
+            "description": "Successful"
+          }
+        }
+      }
+    },
+    "/marvel": {
+      "get": {
+        "summary": "Filterable response of Marvel Character Universe Biographical information",
+        "operationId": "getMarvel",
+        "description": "Returns an array of JSON objects of Marvel Character Universe Biographical Information as found from\n           https://datahub.io/five-thirty-eight/comic-characters\n           dataset<br/><br/>Shorthand query syntax is available for help, pretty, prune, random and seed. Meaning their presence equates to true<br/><br/> e.g. <code>?pretty&random</code> and <code>?pretty=true&random=true</code> are functionally equivalent<br/><br/><sup>* Swagger parameter functionality below only allows for `?pretty=true|false` formatting for \"Try it out\" button</sup>",
+        "parameters": [
+          {
+            "type": "string",
+            "enum": [
+              "json"
+            ],
+            "name": "format",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "string",
+            "description": "Character(s) to search for",
+            "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*",
+            "optional": [
+              "String"
+            ],
+            "x-alternatives": [
+              {
+                "type": "string",
+                "description": "Character(s) to search for",
+                "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*"
+              }
+            ],
+            "name": "characters",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Headers to display",
+            "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*",
+            "optional": [
+              "String"
+            ],
+            "x-alternatives": [
+              {
+                "type": "string",
+                "description": "Headers to display",
+                "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*"
+              }
+            ],
+            "name": "h",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "description": "List available options. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "help",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "integer",
+            "description": "Limit result set. '0' for no limit",
+            "default": 100,
+            "minimum": 0,
+            "name": "limit",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "boolean",
+            "description": "Sort null values first or last in order. No default value is required, presence equates to true",
+            "enum": [
+              "first",
+              "last"
+            ],
+            "name": "nulls",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "boolean",
+            "description": "Pretty print the result set. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "pretty",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "boolean",
+            "description": "Remove keys with null values. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "prune",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "boolean",
+            "description": "Returns array of random characters based on limit. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "random",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "string",
+            "description": "Columns to sort on",
+            "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*:(a|de)sc",
+            "optional": [
+              "s: string representation of sort object"
+            ],
+            "x-alternatives": [
+              {
+                "type": "string",
+                "description": "Columns to sort on",
+                "example": {
+                  "value": "s=name:asc"
+                },
+                "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*:(a|de)sc"
+              },
+              {
+                "type": "array",
+                "description": "Columns to sort on. Either a string or Array of strings",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "column": {
+                      "type": "string",
+                      "enum": [
+                        "name",
+                        "page_id",
+                        "urlslug",
+                        "id",
+                        "align",
+                        "eye",
+                        "hair",
+                        "sex",
+                        "gsm",
+                        "alive",
+                        "appearances",
+                        "first appearance",
+                        "year"
+                      ]
+                    },
+                    "sort": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "column",
+                    "sort"
+                  ],
+                  "name": "s: sort object"
+                },
+                "collectionFormat": "multi",
+                "name": "s: array of sort objects"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "column": {
+                    "type": "string",
+                    "enum": [
+                      "name",
+                      "page_id",
+                      "urlslug",
+                      "id",
+                      "align",
+                      "eye",
+                      "hair",
+                      "sex",
+                      "gsm",
+                      "alive",
+                      "appearances",
+                      "first appearance",
+                      "year"
+                    ]
+                  },
+                  "sort": {
+                    "type": "string",
+                    "enum": [
+                      "asc",
+                      "desc"
+                    ]
+                  }
+                },
+                "required": [
+                  "column",
+                  "sort"
+                ],
+                "name": "s: sort object"
+              }
+            ],
+            "name": "s",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "description": "Keep the same random characters on multiple requests. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "seed",
+            "in": "query",
+            "required": false
+          }
+        ],
+        "tags": [
+          "marvel"
+        ],
+        "responses": {
+          "default": {
+            "schema": {
+              "type": "string"
+            },
+            "description": "Successful"
+          }
+        }
+      },
+      "post": {
+        "summary": "Search for specific Marvel Universe Character(s)",
+        "operationId": "postMarvel",
+        "description": "Returns an array of JSON objects of Marvel Character Biographical Information as found from\n           https://datahub.io/five-thirty-eight/comic-characters\n           dataset<br/><br/>Shorthand query syntax is available for help, pretty, and prune. Meaning their presence equates to true<br/><br/> e.g. <code>?pretty</code> and <code>?pretty=true</code> are functionally equivalent<br/><br/>**character: character filters can used like:**<br/><br/>{keyword1},{keyword2} e.g. iron man,spider-man will search for each character individually<br/><br/>{keyword1}+{keyword2} e.g. spider+man will search for a character name with both 'spider' AND 'man' in it<br/><br/>{keyword1},-{keyword2} e.g. iron man,earth-616 will search for character names containing 'iron man' EXCLUDING results with earth-616 in it<br/><br/>\n**character: character can be a string, or an array of strings (preferred)** e.g.\n  <pre><code>\n   {\n     \"character\": \"spider-man,iron man\"\n   }\n   OR\n   {\n     \"character\": [\"spider-man\", \"iron man\"]\n   }\n  </code></pre>\n**h: h can be a string, or an array (preferred)** e.g.\n  <pre><code>\n   {\n     \"h\": \"name,appearances,year\"\n   }\n   OR\n   {\n     \"h\": [\"name\", \"appearances\", \"year\"]\n   }\n  </code></pre>\n**s: can be a string, an object, array of strings, or an array of objects (preferred)** e.g.\n  <pre><code>\n  {\n    \"s\": \"name:asc,appearances:desc\"\n  }\n  OR\n  {\n    \"s\": {\n       \"column\": \"name\",\n       \"sort\": \"asc\"\n     }\n  }\n  OR\n  {\n    \"s\": [\"name:asc\", \"appearances:desc\"]\n  }\n  OR\n  {\n    \"s\": [\n      { \"column\": \"name\", \"sort\": \"asc\" },\n      { \"column\": \"appearances\", \"sort\": \"desc\" }\n    ]\n  }\n </code></pre>\n",
+        "parameters": [
+          {
+            "in": "body",
+            "name": "body",
+            "schema": {
+              "$ref": "#/definitions/body"
+            }
+          }
+        ],
+        "tags": [
+          "marvel"
+        ],
+        "responses": {
+          "default": {
+            "schema": {
+              "type": "string"
+            },
+            "description": "Successful"
+          }
+        }
+      }
+    },
+    "/dc/{characters}": {
+      "get": {
+        "summary": "Search for specific DC Universe Character(s)",
+        "operationId": "getDcCharacters",
+        "description": "Returns an array of JSON objects of DC Character Biographical Information as found from\n           https://datahub.io/five-thirty-eight/comic-characters\n           dataset<br/><br/>Shorthand query syntax is available for help, pretty, and prune. Meaning their presence equates to true<br/><br/> e.g. <code>?pretty</code> and <code>?pretty=true</code> are functionally equivalent<br/><br/>**character: character filters can used like:**<br/><br/>{keyword1},{keyword2} e.g. superman,batman will search for each character individually<br/><br/>{keyword1}+{keyword2} e.g. bat+man will search for a character name with both 'bat' AND 'man' in it<br/><br/>{keyword1},-{keyword2} e.g. superman,-woman will search for character names containing 'superman' EXCLUDING results with -woman in it",
+        "parameters": [
+          {
+            "type": "string",
+            "enum": [
+              "json"
+            ],
+            "name": "format",
+            "in": "path"
+          },
+          {
+            "type": "array",
+            "description": "Character(s) to search for. Either a string or Array of strings",
+            "items": {
+              "type": "string"
+            },
+            "x-alternatives": [
+              {
+                "type": "array",
+                "description": "Character(s) to search for. Either a string or Array of strings",
+                "items": {
+                  "type": "string"
+                },
+                "name": "characters: array of characters"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "name": "characters",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "enum": [
+              "json"
+            ],
+            "name": "format",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "string",
+            "description": "Character(s) to search for",
+            "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*",
+            "optional": [
+              "String"
+            ],
+            "x-alternatives": [
+              {
+                "type": "string",
+                "description": "Character(s) to search for",
+                "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*"
+              }
+            ],
+            "name": "characters",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Headers to display",
+            "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*",
+            "optional": [
+              "String"
+            ],
+            "x-alternatives": [
+              {
+                "type": "string",
+                "description": "Headers to display",
+                "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*"
+              }
+            ],
+            "name": "h",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "description": "List available options. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "help",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "integer",
+            "description": "Limit result set. '0' for no limit",
+            "default": 100,
+            "minimum": 0,
+            "name": "limit",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "boolean",
+            "description": "Sort null values first or last in order. No default value is required, presence equates to true",
+            "enum": [
+              "first",
+              "last"
+            ],
+            "name": "nulls",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "boolean",
+            "description": "Pretty print the result set. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "pretty",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "boolean",
+            "description": "Remove keys with null values. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "prune",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "string",
+            "description": "Columns to sort on",
+            "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*:(a|de)sc",
+            "optional": [
+              "s: string representation of sort object"
+            ],
+            "x-alternatives": [
+              {
+                "type": "string",
+                "description": "Columns to sort on",
+                "example": {
+                  "value": "s=name:asc"
+                },
+                "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*:(a|de)sc"
+              },
+              {
+                "type": "array",
+                "description": "Columns to sort on. Either a string or Array of strings",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "column": {
+                      "type": "string",
+                      "enum": [
+                        "name",
+                        "page_id",
+                        "urlslug",
+                        "id",
+                        "align",
+                        "eye",
+                        "hair",
+                        "sex",
+                        "gsm",
+                        "alive",
+                        "appearances",
+                        "first appearance",
+                        "year"
+                      ]
+                    },
+                    "sort": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "column",
+                    "sort"
+                  ],
+                  "name": "s: sort object"
+                },
+                "collectionFormat": "multi",
+                "name": "s: array of sort objects"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "column": {
+                    "type": "string",
+                    "enum": [
+                      "name",
+                      "page_id",
+                      "urlslug",
+                      "id",
+                      "align",
+                      "eye",
+                      "hair",
+                      "sex",
+                      "gsm",
+                      "alive",
+                      "appearances",
+                      "first appearance",
+                      "year"
+                    ]
+                  },
+                  "sort": {
+                    "type": "string",
+                    "enum": [
+                      "asc",
+                      "desc"
+                    ]
+                  }
+                },
+                "required": [
+                  "column",
+                  "sort"
+                ],
+                "name": "s: sort object"
+              }
+            ],
+            "name": "s",
+            "in": "query"
+          }
+        ],
+        "tags": [
+          "dc"
+        ],
+        "responses": {
+          "default": {
+            "schema": {
+              "type": "string"
+            },
+            "description": "Successful"
+          }
+        }
+      }
+    },
+    "/marvel/{characters}": {
+      "get": {
+        "summary": "Search for specific Marvel Universe Character(s)",
+        "operationId": "getMarvelCharacters",
+        "description": "Returns an array of JSON objects of Marvel Character Biographical Information as found from\n           https://datahub.io/five-thirty-eight/comic-characters\n           dataset<br/><br/>Shorthand query syntax is available for help, pretty, and prune. Meaning their presence equates to true<br/><br/> e.g. <code>?pretty</code> and <code>?pretty=true</code> are functionally equivalent<br/><br/>**character: character filters can used like:**<br/><br/>{keyword1},{keyword2} e.g. iron man,spider-man will search for each character individually<br/><br/>{keyword1}+{keyword2} e.g. spider+man will search for a character name with both 'spider' AND 'man' in it<br/><br/>{keyword1},-{keyword2} e.g. iron man,earth-616 will search for character names containing 'iron man' EXCLUDING results with earth-616 in it",
+        "parameters": [
+          {
+            "type": "string",
+            "enum": [
+              "json"
+            ],
+            "name": "format",
+            "in": "path"
+          },
+          {
+            "type": "array",
+            "description": "Character(s) to search for. Either a string or Array of strings",
+            "items": {
+              "type": "string"
+            },
+            "x-alternatives": [
+              {
+                "type": "array",
+                "description": "Character(s) to search for. Either a string or Array of strings",
+                "items": {
+                  "type": "string"
+                },
+                "name": "characters: array of characters"
+              },
+              {
+                "type": "string"
+              }
+            ],
+            "name": "characters",
+            "in": "path",
+            "required": true
+          },
+          {
+            "type": "string",
+            "enum": [
+              "json"
+            ],
+            "name": "format",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "string",
+            "description": "Character(s) to search for",
+            "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*",
+            "optional": [
+              "String"
+            ],
+            "x-alternatives": [
+              {
+                "type": "string",
+                "description": "Character(s) to search for",
+                "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*"
+              }
+            ],
+            "name": "characters",
+            "in": "query"
+          },
+          {
+            "type": "string",
+            "description": "Headers to display",
+            "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*",
+            "optional": [
+              "String"
+            ],
+            "x-alternatives": [
+              {
+                "type": "string",
+                "description": "Headers to display",
+                "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*"
+              }
+            ],
+            "name": "h",
+            "in": "query"
+          },
+          {
+            "type": "boolean",
+            "description": "List available options. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "help",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "integer",
+            "description": "Limit result set. '0' for no limit",
+            "default": 100,
+            "minimum": 0,
+            "name": "limit",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "boolean",
+            "description": "Sort null values first or last in order. No default value is required, presence equates to true",
+            "enum": [
+              "first",
+              "last"
+            ],
+            "name": "nulls",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "boolean",
+            "description": "Pretty print the result set. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "pretty",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "boolean",
+            "description": "Remove keys with null values. No default value is required, presence equates to true",
+            "enum": [
+              true,
+              false
+            ],
+            "name": "prune",
+            "in": "query",
+            "required": false
+          },
+          {
+            "type": "string",
+            "description": "Columns to sort on",
+            "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*:(a|de)sc",
+            "optional": [
+              "s: string representation of sort object"
+            ],
+            "x-alternatives": [
+              {
+                "type": "string",
+                "description": "Columns to sort on",
+                "example": {
+                  "value": "s=name:asc"
+                },
+                "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*:(a|de)sc"
+              },
+              {
+                "type": "array",
+                "description": "Columns to sort on. Either a string or Array of strings",
+                "items": {
+                  "type": "object",
+                  "properties": {
+                    "column": {
+                      "type": "string",
+                      "enum": [
+                        "name",
+                        "page_id",
+                        "urlslug",
+                        "id",
+                        "align",
+                        "eye",
+                        "hair",
+                        "sex",
+                        "gsm",
+                        "alive",
+                        "appearances",
+                        "first appearance",
+                        "year"
+                      ]
+                    },
+                    "sort": {
+                      "type": "string",
+                      "enum": [
+                        "asc",
+                        "desc"
+                      ]
+                    }
+                  },
+                  "required": [
+                    "column",
+                    "sort"
+                  ],
+                  "name": "s: sort object"
+                },
+                "collectionFormat": "multi",
+                "name": "s: array of sort objects"
+              },
+              {
+                "type": "object",
+                "properties": {
+                  "column": {
+                    "type": "string",
+                    "enum": [
+                      "name",
+                      "page_id",
+                      "urlslug",
+                      "id",
+                      "align",
+                      "eye",
+                      "hair",
+                      "sex",
+                      "gsm",
+                      "alive",
+                      "appearances",
+                      "first appearance",
+                      "year"
+                    ]
+                  },
+                  "sort": {
+                    "type": "string",
+                    "enum": [
+                      "asc",
+                      "desc"
+                    ]
+                  }
+                },
+                "required": [
+                  "column",
+                  "sort"
+                ],
+                "name": "s: sort object"
+              }
+            ],
+            "name": "s",
+            "in": "query"
+          }
+        ],
+        "tags": [
+          "marvel"
+        ],
+        "responses": {
+          "default": {
+            "schema": {
+              "type": "string"
+            },
+            "description": "Successful"
+          }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "characters: array of characters": {
+      "type": "array",
+      "description": "Character(s) to search for. Either a string or Array of strings",
+      "items": {
+        "type": "string"
+      }
+    },
+    "h: array of column names": {
+      "type": "array",
+      "description": "Headers to display. Either a string or Array of strings",
+      "items": {
+        "type": "string",
+        "enum": [
+          "name",
+          "page_id",
+          "urlslug",
+          "id",
+          "align",
+          "eye",
+          "hair",
+          "sex",
+          "gsm",
+          "alive",
+          "appearances",
+          "first appearance",
+          "year"
+        ]
+      }
+    },
+    "s: sort object": {
+      "type": "object",
+      "properties": {
+        "column": {
+          "type": "string",
+          "enum": [
+            "name",
+            "page_id",
+            "urlslug",
+            "id",
+            "align",
+            "eye",
+            "hair",
+            "sex",
+            "gsm",
+            "alive",
+            "appearances",
+            "first appearance",
+            "year"
+          ]
+        },
+        "sort": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ]
+        }
+      },
+      "required": [
+        "column",
+        "sort"
+      ]
+    },
+    "s: array of sort objects": {
+      "type": "array",
+      "description": "Columns to sort on. Either a string or Array of strings",
+      "items": {
+        "$ref": "#/definitions/s: sort object"
+      }
+    },
+    "body": {
+      "type": "object",
+      "description": "Filter Params",
+      "properties": {
+        "format": {
+          "type": "string",
+          "enum": [
+            "json"
+          ]
+        },
+        "characters": {
+          "$ref": "#/definitions/characters: array of characters",
+          "x-alternatives": [
+            {
+              "$ref": "#/x-alt-definitions/characters: array of characters"
+            },
+            {
+              "type": "string"
+            }
+          ]
+        },
+        "h": {
+          "$ref": "#/definitions/h: array of column names",
+          "optional": [
+            "String"
+          ],
+          "x-alternatives": [
+            {
+              "$ref": "#/x-alt-definitions/h: array of column names"
+            },
+            {
+              "type": "string",
+              "description": "Headers to display",
+              "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*"
+            }
+          ]
+        },
+        "help": {
+          "type": "boolean",
+          "description": "List available options. No default value is required, presence equates to true",
+          "enum": [
+            true,
+            false
+          ]
+        },
+        "limit": {
+          "type": "integer",
+          "description": "Limit result set. '0' for no limit",
+          "default": 100,
+          "minimum": 0
+        },
+        "nulls": {
+          "type": "boolean",
+          "description": "Sort null values first or last in order. No default value is required, presence equates to true",
+          "enum": [
+            "first",
+            "last"
+          ]
+        },
+        "pretty": {
+          "type": "boolean",
+          "description": "Pretty print the result set. No default value is required, presence equates to true",
+          "enum": [
+            true,
+            false
+          ]
+        },
+        "prune": {
+          "type": "boolean",
+          "description": "Remove keys with null values. No default value is required, presence equates to true",
+          "enum": [
+            true,
+            false
+          ]
+        },
+        "random": {
+          "type": "boolean",
+          "description": "Returns array of random characters based on limit. No default value is required, presence equates to true",
+          "enum": [
+            true,
+            false
+          ]
+        },
+        "s": {
+          "$ref": "#/definitions/s: array of sort objects",
+          "optional": [
+            "s: string representation of sort object"
+          ],
+          "x-alternatives": [
+            {
+              "$ref": "#/x-alt-definitions/s: array of sort objects"
+            },
+            {
+              "$ref": "#/x-alt-definitions/s: sort object"
+            },
+            {
+              "type": "string",
+              "description": "Columns to sort on",
+              "example": {
+                "value": "s=name:asc"
+              },
+              "pattern": "([a-zA-Z0-9_]+)(,[a-zA-Z0-9_]+)*:(a|de)sc"
+            }
+          ]
+        },
+        "seed": {
+          "type": "boolean",
+          "description": "Keep the same random characters on multiple requests. No default value is required, presence equates to true",
+          "enum": [
+            true,
+            false
+          ]
+        }
+      }
+    }
+  },
+  "x-alt-definitions": {
+    "characters: array of characters": {
+      "type": "array",
+      "description": "Character(s) to search for. Either a string or Array of strings",
+      "items": {
+        "type": "string"
+      }
+    },
+    "h: array of column names": {
+      "type": "array",
+      "description": "Headers to display. Either a string or Array of strings",
+      "items": {
+        "type": "string",
+        "enum": [
+          "name",
+          "page_id",
+          "urlslug",
+          "id",
+          "align",
+          "eye",
+          "hair",
+          "sex",
+          "gsm",
+          "alive",
+          "appearances",
+          "first appearance",
+          "year"
+        ]
+      }
+    },
+    "s: sort object": {
+      "type": "object",
+      "properties": {
+        "column": {
+          "type": "string",
+          "enum": [
+            "name",
+            "page_id",
+            "urlslug",
+            "id",
+            "align",
+            "eye",
+            "hair",
+            "sex",
+            "gsm",
+            "alive",
+            "appearances",
+            "first appearance",
+            "year"
+          ]
+        },
+        "sort": {
+          "type": "string",
+          "enum": [
+            "asc",
+            "desc"
+          ]
+        }
+      },
+      "required": [
+        "column",
+        "sort"
+      ]
+    },
+    "s: array of sort objects": {
+      "type": "array",
+      "description": "Columns to sort on. Either a string or Array of strings",
+      "items": {
+        "$ref": "#/x-alt-definitions/s: sort object"
+      }
+    }
+  }
+}
