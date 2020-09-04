@@ -49,14 +49,14 @@ class ApiUtils(ServiceUtils):
              |         |          | {self.cols}
   help       | help    | false    | Display Help
   limit      | limit   | 100      | Limit results ( 0 = unlimited)
-  nulls      | nulls   | first    | null values sorted first or last e.g. [null, 1, 2, 3] or [1, 2, 3, null] † 
+  nulls      | nulls   | first    | null values sorted first or last e.g. [null, 1, 2, 3] or [1, 2, 3, null] †
   pretty     | pretty  | false    | Pretty print JSON results
   prune      | prune   | false    | Remove null values from output
   random     | random  | false    | Array of random characters based on limit
   sort       | s       | unsorted | Sort response asc|desc e.g. s=name,appearances:desc
   seed       | seed    | false    | Keep the same random characters on multiple requests
-          
-          
+
+
     * (as of Sep. 2, 2014. Number will become increasingly out of date as time goes on)
     † Does not apply when sorting on column/header which contains a null value, records with null values are removed
         """
@@ -138,7 +138,7 @@ class ApiUtils(ServiceUtils):
         search["some"] = list()
         search["every"] = list()
         search["exclude"] = list()
-        for characters in search_list:
+        for characters in list(search_list):
             if characters.startswith("-"):
                 chars = self.permutate(characters.replace("-", ""))
                 search["exclude"] = search["exclude"] + chars
@@ -178,7 +178,7 @@ class ApiUtils(ServiceUtils):
         """
         sort = list()
         sort_list = self.handle_param_types(sort_str)
-        for i in sort_list:
+        for i in list(sort_list):
             if isinstance(i, str) and ":" in i:
                 slst = i.split(":")
                 sort.append({"column": slst[0], "sort": self.direction(slst[1])})
