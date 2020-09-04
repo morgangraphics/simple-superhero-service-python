@@ -52,7 +52,7 @@ The service itself and the data contained within service may be useful for testi
 
 ## Service
 
-![Simple Superhero Service](img/swagger.png)
+![Simple Superhero Service](https://github.com/morgangraphics/simple-superhero-service-python/img/swagger.png)
 
 #### Requirements
 Python 3.6+
