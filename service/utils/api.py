@@ -2,10 +2,15 @@ from . import ServiceUtils
 
 
 class ApiUtils(ServiceUtils):
+    """
+        ApiUtils class.
+        Contains:
+            Preformatted documentation
+            Default configuration
+            Sorting
+    """
     def __init__(self):
-        """
-        Inheritance here is probably not needed but done for testing out the idea
-        """
+        """Inheritance here is probably not needed but done for testing out the idea"""
         super().__init__()
 
         self.cols = """

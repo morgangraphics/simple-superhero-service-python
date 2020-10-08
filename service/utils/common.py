@@ -2,6 +2,12 @@ import re
 
 
 class ServiceUtils:
+    """
+        ServiceUtils Class
+            Sorting Direction helper
+            Param Type normalization
+            Permutations on names
+    """
     def __init__(self):
         return
 
@@ -9,6 +15,7 @@ class ServiceUtils:
     def direction(val):
         """
         Internal Method that determines sort direction reverse=False|True
+
         :param val: asc or dsc
         :return: Boolean
         """
@@ -19,6 +26,7 @@ class ServiceUtils:
         """
        Parameters can come in several different formats. This private method tests for the
        format and prepares it accordingly
+
         :param param: (str|list|dict}
         :return: (list)
         """
@@ -36,6 +44,7 @@ class ServiceUtils:
         """
         Will attempt to make permutations on names passed in so empty result sets are limited
         e.g. spider man, spider-man, spiderman
+
         :param names: (str) Character names
         :return: (list) List of character name permutations
         """
