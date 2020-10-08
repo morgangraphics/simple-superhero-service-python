@@ -1,7 +1,7 @@
 class InvalidUsage(Exception):
     """
         InvalidUsage Class
-            Handles Error messaging normalization for Flask
+        Handles Error messaging normalization for Flask
     """
     status_code = 400
 
@@ -23,7 +23,7 @@ class InvalidUsage(Exception):
     def to_dict(self):
         """
         Normalizes the error message in a dictionary
-        
+
         :return:
         """
         rv = dict(self.payload or ())
