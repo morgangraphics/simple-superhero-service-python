@@ -9,6 +9,7 @@ class InvalidUsage(Exception):
         """
         Normalizes Flask Error code is JSON
         https://flask.palletsprojects.com/en/master/errorhandling/#returning-api-errors-as-json
+
         :param message:
         :param status_code:
         :param payload:
@@ -22,6 +23,7 @@ class InvalidUsage(Exception):
     def to_dict(self):
         """
         Normalizes the error message in a dictionary
+        
         :return:
         """
         rv = dict(self.payload or ())

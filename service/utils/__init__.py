@@ -1,6 +1,4 @@
-"""
-Include the Classes needed for the API
-"""
+"""Include the Classes needed for the API"""
 
 from .error import InvalidUsage
 from .common import ServiceUtils
