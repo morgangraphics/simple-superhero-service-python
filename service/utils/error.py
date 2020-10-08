@@ -1,4 +1,5 @@
 class InvalidUsage(Exception):
+    
     """
         InvalidUsage Class
         Handles Error messaging normalization for Flask
