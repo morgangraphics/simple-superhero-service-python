@@ -1,3 +1,7 @@
+"""
+DC Comic Book Character Routing Setup
+"""
+
 from flask import Blueprint
 from flask import json
 from flask import request
@@ -14,8 +18,9 @@ bp_dc = Blueprint("dc", __name__, url_prefix="/dc")
 @bp_dc.route("/<characters>/", methods=["GET"])
 def dc(characters=None):
     """
-    DC endpoint.
-    Flask defaults to trailing slash which works for both dc/badman and /dc/batman/
+    DC endpoint. Flask defaults to trailing slash which works for
+    both dc/badman and /dc/batman/
+
     :param characters: (str) String representation of DC characters to search/filter by e.g batman
     """
     api = ApiUtils()

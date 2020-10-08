@@ -8,6 +8,7 @@ from .utils import InvalidUsage
 def create_app(test_config=None, **kwargs):
     """
     Flask Service Entry Point/Initialization
+
     :param test_config:
     :return:
     """
@@ -16,6 +17,12 @@ def create_app(test_config=None, **kwargs):
 
     @app.errorhandler(InvalidUsage)
     def handle_invalid_usage(error):
+        """
+        Error Handler
+
+        :param error:
+        :return:
+        """
         response = jsonify(error.to_dict())
         response.status_code = error.status_code
         return response

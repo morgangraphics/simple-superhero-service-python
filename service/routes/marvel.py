@@ -1,3 +1,7 @@
+"""
+DC Comic Book Character Routing Setup
+"""
+
 from flask import Blueprint
 from flask import json
 from flask import request
@@ -14,8 +18,9 @@ bp_marvel = Blueprint("marvel", __name__, url_prefix="/marvel")
 @bp_marvel.route("/<characters>/", methods=["GET"])
 def marvel(characters=None):
     """
-    Marvel endpoint.
-    Flask defaults to trailing slash which works for both marvel/spider-man and /marvel/spider-man/
+    Marvel endpoint. Flask defaults to trailing slash which works for
+    both marvel/spider-man and /marvel/spider-man/
+
     :param characters: (str) String representation of Marvel characters to search/filter by e.g spider-man
     """
     api = ApiUtils()
