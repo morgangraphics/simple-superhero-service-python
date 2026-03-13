@@ -2,17 +2,15 @@
 Simple Health check route
 """
 
-from flask import Blueprint
-from flask import json
+from fastapi import APIRouter
+
+from ..models import HealthResponse
+
+bp_hc = APIRouter()
 
 
-bp_hc = Blueprint("healthcheck", __name__)
+@bp_hc.get("/healthcheck", tags=["healthcheck"], summary="Test if the Service is up", response_model=HealthResponse)
+def healthcheck() -> HealthResponse:
+    """Simple health check endpoint."""
+    return HealthResponse(status="Ok")
 
-
-@bp_hc.route("/healthcheck", methods=["GET"])
-def healthcheck():
-    """
-    Simple health check endpoint
-    :return:
-    """
-    return json.dumps({"status": "Ok"})

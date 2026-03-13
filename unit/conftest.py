@@ -1,6 +1,8 @@
 import pytest
-from service import create_app
+from fastapi.testclient import TestClient
 from urllib.parse import urlparse, parse_qsl
+
+from service import create_app
 
 
 def normalize_url(url, universe="marvel"):
@@ -12,18 +14,12 @@ def normalize_url(url, universe="marvel"):
 
 @pytest.fixture
 def app():
-    app = create_app({"TESTING": True})
-    yield app
+    return create_app()
 
 
 @pytest.fixture
 def client(app):
-    return app.test_client()
-
-
-@pytest.fixture
-def runner(app):
-    return app.test_cli_runner()
+    return TestClient(app, raise_server_exceptions=False)
 
 
 @pytest.fixture
@@ -155,3 +151,4 @@ def common_config_options(request):
     if request is not None and data.get(request.param):
         val = data[request.param]
     return val
+

@@ -158,15 +158,15 @@ def test_help_search(universe, character):
     )
 def test_show_help_no_characters(client, endpoint, expected):
     response = client.get(f"{endpoint}/?help")
-    data = response.data.decode("utf8")
+    data = response.text
     assert expected in data
 
 @pytest.mark.parametrize(
-    ("endpoint", "character"), [("/marvel/", "spider-man"), ("/dc/", "batman")],
+    ("endpoint", "character"), [("/marvel", "spider-man"), ("/dc", "batman")],
 )
 def test_show_help_with_characters(client, endpoint, character):
     response = client.get(f"{endpoint}/{character}/?help")
-    data = response.data.decode("utf8")
+    data = response.text
     assert character in data
 
 @pytest.mark.parametrize(

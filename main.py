@@ -1,12 +1,16 @@
+import uvicorn
+
 from service import create_app
+from service.config import get_settings
 
 app = create_app()
 
-# Stub that allows for running from commandline via python main.py
 if __name__ == "__main__":
-    # Setting debug to True enables debug output. This line should be
-    app.run(
-        host=app.config.get("HOST"),
-        port=app.config.get("PORT"),
-        ssl_context=(app.config.get("SSL_CERT"), app.config.get("SSL_KEY")),
+    settings = get_settings()
+    uvicorn.run(
+        app,
+        host=settings.host,
+        port=settings.port,
+        ssl_certfile=settings.ssl_cert,
+        ssl_keyfile=settings.ssl_key,
     )

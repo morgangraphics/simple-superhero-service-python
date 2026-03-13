@@ -3,26 +3,25 @@ import re
 
 class ServiceUtils:
     """
-        ServiceUtils Class
-            Sorting Direction helper
-            Param Type normalization
-            Permutations on names
+    ServiceUtils
+    Sorting direction helper, param-type normalisation, name permutations.
     """
-    def __init__(self):
+
+    def __init__(self) -> None:
         return
 
     @staticmethod
-    def direction(val):
+    def direction(val: str) -> bool:
         """
         Internal Method that determines sort direction reverse=False|True
 
         :param val: asc or dsc
         :return: Boolean
         """
-        return False if val == "asc" else True
+        return val != "asc"
 
     @staticmethod
-    def handle_param_types(param):
+    def handle_param_types(param: str | list | dict) -> list:
         """
        Parameters can come in several different formats. This private method tests for the
        format and prepares it accordingly
@@ -40,7 +39,7 @@ class ServiceUtils:
         return response
 
     @staticmethod
-    def permutate(names):
+    def permutate(names: str | list) -> list:
         """
         Will attempt to make permutations on names passed in so empty result sets are limited
         e.g. spider man, spider-man, spiderman

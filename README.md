@@ -38,7 +38,7 @@
 
 I needed a self-contained, data service (no Database) for testing a number of different scenarios with a diverse and robust dataset that also contains some sparseness.
 
-Service runs on Python and Flask
+Service runs on Python and FastAPI
 
 The service itself and the data contained within service may be useful for testing:
 
@@ -56,25 +56,56 @@ The service itself and the data contained within service may be useful for testi
 
 
 #### Requirements
-Python 3.6+
-Flask 1.1+
+Python 3.12+
+uv 0.4+
 
 #### Installation
 1.  Clone the repo `git clone https://github.com/morgangraphics/simple-superhero-service-python.git`
-1.  cd into the directory and install the requirements `pip install -r requirements.txt` or `pip3 install -r requirements.txt`
+1.  cd into the directory and create a virtual environment and install dependencies:
+    ```bash
+    uv venv .venv --python 3.12
+    uv sync --extra dev
+    ```
 1.  Generate a self signed cert `openssl req -new -newkey rsa:4096 -x509 -sha256 -days 365 -nodes -out sssp-cert.pem -keyout sssp-key.pem -days 365`
-1.  Rename the `config/default.example.cfg` file to `config/default.cfg` and update the ``<PLACEHOLDERS>`` according to your setup (see below)\*
-1.  OR Update the `.flaskenv` file according to your setup if you plan to use the Flask CLI
-1.  You can run service via the Flask CLI `export FLASK_APP=main.py && flask run` or in a venv `./simple-superhero-service-python/venv/bin/flask run` or with plain ole python `export FLASK_APP=main.py && python -m flask run`
+    - Or use `make certs` (see below)
+1.  Copy `config/default.example.cfg` to `config/.env` and update the `<PLACEHOLDERS>` according to your setup (see below)
+1.  Run the service: `make start`
 1.  The self-signed certs will make the browser throw a `Potential Security Risk` error. Select the Advanced button/link and `Accept the risk and continue` button/link
 
-Marvel URL: [https://localhost:5000/marvel](https://localhost:5000/marvel)
+Marvel URL: [https://localhost:8000/marvel](https://localhost:8000/marvel)
 
-DC URL: [https://localhost:5000/dc](https://localhost:5000/dc)
+DC URL: [https://localhost:8000/dc](https://localhost:8000/dc)
 
-Swagger Interface: [https://localhost:5000/swagger/#](https://localhost:5000/swagger/#)
+Swagger Interface: [https://localhost:8000/swagger](https://localhost:8000/swagger)
 
-*   :warning: This ONLY applies to when running Flask like `export FLASK_APP=main.py && python -m flask run` Do the same for `development.example.cfg` and `productions.example.cfg` if you want to override environment specific variables
+*   :warning: SSL cert and key paths are configured via the `SSL_CERT` and `SSL_KEY` variables in `config/.env`
+
+#### Make commands
+
+Run `make help` to see all available commands. Full list (alphabetical):
+
+| Command              | Description                                               |
+|----------------------|-----------------------------------------------------------|
+| `make certs`         | Generate self-signed SSL certs for local development      |
+| `make coverage`      | Run tests with coverage report (terminal)                 |
+| `make coverage-html` | Run tests with coverage report (HTML)                     |
+| `make dev`           | Start the service with auto-reload                        |
+| `make docker-build`  | Build the Docker image                                    |
+| `make docker-shell`  | Open a shell in a new container                           |
+| `make docker-start`  | Run the container (mounts local certs, exposes port 8000) |
+| `make docker-stop`   | Stop the running container                                |
+| `make format`        | Run black formatter                                       |
+| `make format-check`  | Check formatting without making changes                   |
+| `make install`       | Install all dependencies (including dev)                  |
+| `make lint`          | Run ruff linter                                           |
+| `make lint-fix`      | Run ruff linter and auto-fix                              |
+| `make start`         | Start the service (foreground)                            |
+| `make stop`          | Stop any background uvicorn process                       |
+| `make test`          | Run all unit tests                                        |
+| `make test-file`     | Run file utility tests only                               |
+| `make test-unit`     | Run unit tests (alias)                                    |
+| `make test-verbose`  | Run unit tests with verbose output                        |
+
 
 
 ## Dataset
@@ -189,7 +220,7 @@ The base endpoints allow for retrieving data and applying a series of filters to
 
 
 ##### Examples
-`curl -X GET --header 'Accept: application/json' 'https://localhost:5000/dc?pretty&limit=3&s=name:asc'`
+`curl -X GET --header 'Accept: application/json' 'https://localhost:8000/dc?pretty&limit=3&s=name:asc'`
 ```json
 [
     {
@@ -240,7 +271,7 @@ The base endpoints allow for retrieving data and applying a series of filters to
 ]
 ```
 
-`curl -X GET --header 'Accept: application/json' 'https://localhost:5000/dc?h=name,appearances&pretty&limit=3&s=name:asc'`
+`curl -X GET --header 'Accept: application/json' 'https://localhost:8000/dc?h=name,appearances&pretty&limit=3&s=name:asc'`
 ```json
 [
     {
@@ -258,7 +289,7 @@ The base endpoints allow for retrieving data and applying a series of filters to
 ]
 ```
 
-`curl -X GET --header 'Accept: application/json' 'https://localhost:5000/marvel/spider+man,-woman/?pretty&s=name:asc'`
+`curl -X GET --header 'Accept: application/json' 'https://localhost:8000/marvel/spider+man,-woman/?pretty&s=name:asc'`
 ```json
 [
     {
@@ -324,7 +355,7 @@ The base endpoints allow for retrieving data and applying a series of filters to
 ]
 ```
 
-`curl -X GET --header 'Accept: application/json' 'https://localhost:5000/marvel/spider+man,-woman/?pretty&s=name:asc&prune'`
+`curl -X GET --header 'Accept: application/json' 'https://localhost:8000/marvel/spider+man,-woman/?pretty&s=name:asc&prune'`
 ```json
 [
     {
@@ -377,7 +408,7 @@ The base endpoints allow for retrieving data and applying a series of filters to
 ```
 
 
-`curl -X GET --header 'Accept: application/json' 'https://localhost:5000/marvel?help'`
+`curl -X GET --header 'Accept: application/json' 'https://localhost:8000/marvel?help'`
 ```text
 format     | format  | json     | Output format (currently only JSON)
 headers    | h       | all      | Available Columns (page_id, name, urlslug, id, align, eye, hair, sex, gsm, alive, appearances, first appearance, year)
@@ -411,14 +442,14 @@ sort       | s       | unsorted | Sort response asc|desc e.g. s=name,appearances
 † Does not apply when sorting on column/header which contains a null value, records with null values are removed
 ```
 
-`curl -X GET --header 'Accept: application/json' 'https://localhost:5000/dc?limit=2&random&seed'`
+`curl -X GET --header 'Accept: application/json' 'https://localhost:8000/dc?limit=2&random&seed'`
 ```json
 [{"page_id":127398,"name":"cassandra cartland (new earth)","urlslug":"/wiki/cassandra_cartland_(new_earth)","id":"","align":"bad characters","eye":"green eyes","hair":"brown hair","sex":"female characters","gsm":"","alive":"living characters","appearances":6,"first appearance":"1997, february","year":1997},{"page_id":192282,"name":"poltergeist (new earth)","urlslug":"/wiki/poltergeist_(new_earth)","id":"","align":"bad characters","eye":"blue eyes","hair":"black hair","sex":"male characters","gsm":"","alive":"living characters","appearances":1,"first appearance":"1996, december","year":1996}]
 ```
 
 In many cases where there are multiple characters with the same name (in alternative story lines) the first result is usually the "Original" character. That is how the data is structured. However, you might want to specifically target a character or characters by using the search filters.
 
-`curl -X GET --header 'Accept: application/json' 'https://localhost:5000/marvel/spider+man,-woman,-616?pretty'`
+`curl -X GET --header 'Accept: application/json' 'https://localhost:8000/marvel/spider+man,-woman,-616?pretty'`
 
 This request is looking for a character name that contains both "spider" AND 'man' BUT NOT "woman" or '616'
 ```json
@@ -526,7 +557,7 @@ OR
       "sort": "asc"
     }
   ]
-}' 'https://localhost:5000/marvel'
+}' 'https://localhost:8000/marvel'
 `
 
 ```json
@@ -553,7 +584,7 @@ OR
 
 Character names can have a bit of variation which can be a bit inconsistent between story lines. The official name for Spider-man contains a dash, however, other variants can be Spiderman, Spider man, in addition to Spider-man. The service attempts to use permutation to generate different spellings depending on how the name is entered. If you are unsure, leave a space e.g. `spider man` and the service will search for `spider-man, spiderman, and spider man`
 
-`curl -X GET --header 'Accept: application/json' 'https://localhost:5000/marvel/spider%20man/?pretty'`
+`curl -X GET --header 'Accept: application/json' 'https://localhost:8000/marvel/spider%20man/?pretty'`
 
 ```json
 [
@@ -606,7 +637,7 @@ Character names can have a bit of variation which can be a bit inconsistent betw
 ```
 Filters work the same as the base endpoint. (Excluding `random` and `seed`)
 
-`curl -X GET --header 'Accept: application/json' 'https://localhost:5000/marvel/iron%20man/?pretty&s=year:desc'`
+`curl -X GET --header 'Accept: application/json' 'https://localhost:8000/marvel/iron%20man/?pretty&s=year:desc'`
 
 ```json
 [
@@ -688,7 +719,7 @@ Filters work the same as the base endpoint. (Excluding `random` and `seed`)
 ]
 ```
 
-`curl -X GET --header 'Accept: application/json' 'https://localhost:5000/marvel/iron%20man/?pretty&s=year:desc&nulls=last'`
+`curl -X GET --header 'Accept: application/json' 'https://localhost:8000/marvel/iron%20man/?pretty&s=year:desc&nulls=last'`
 
 ```json
 [

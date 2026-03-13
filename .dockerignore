@@ -1,0 +1,17 @@
+.git
+.venv
+*.pem
+htmlcov
+coverage
+.github
+.circleci
+img
+unit
+tests
+config/.env
+__pycache__
+*.pyc
+*.egg-info
+dist
+build
+simple-super-hero-service-upgrade.md

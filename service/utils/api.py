@@ -3,14 +3,11 @@ from . import ServiceUtils
 
 class ApiUtils(ServiceUtils):
     """
-        ApiUtils class.
-        Contains:
-            Preformatted documentation
-            Default configuration
-            Sorting
+    ApiUtils
+    Pre-formatted documentation, default configuration, and sorting helpers.
     """
-    def __init__(self):
-        """Inheritance here is probably not needed but done for testing out the idea"""
+
+    def __init__(self) -> None:
         super().__init__()
 
         self.cols = """
@@ -66,11 +63,10 @@ class ApiUtils(ServiceUtils):
     † Does not apply when sorting on column/header which contains a null value, records with null values are removed
         """
 
-    def help_search(self, universe):
+    def help_search(self, universe: str) -> str:
         """
-        Returns Universe specific examples/documentation based on param
-        :param universe: (str) Marvel/DC
-        :return:
+        Returns universe-specific examples/documentation.
+        :param universe: "marvel" or "dc"
         """
         return f"""
   character  |         | empty    | Output format (currently only JSON)
@@ -80,63 +76,49 @@ class ApiUtils(ServiceUtils):
              |         |          |{self.help_base}
 """
 
-    def handle_config(self, args):
+    def handle_config(self, args: dict) -> dict:
         """
-        Normalize configuration dict used for retrieving data
-        :param args: (dict) of arguments passed in via GET Querystring, or POST JSON
-        :return: (dict) Normalized configuration dictionary
+        Normalise the configuration dict used for retrieving data.
+        :param args: Query-string or POST-body parameters.
+        :return: Normalised configuration dictionary.
         """
-        config = dict()
         present = [True, "true", ""]
+        config: dict = {"format": "json"}
 
         if args.get("characters") is not None:
-            config["characters"] = self.character_search_dict(args.get("characters"))
-
-        config["format"] = "json"
+            config.update({"characters": self.character_search_dict(args.get("characters"))})
 
         if args.get("h"):
-            val = ""
-            if isinstance(args.get("h"), str):
-                val = args.get("h").split(",")
-            if isinstance(args.get("h"), list):
-                val = args.get("h")
-            config["h"] = val
+            h_val: str | list = args.get("h")
+            config.update({"h": h_val.split(",") if isinstance(h_val, str) else h_val})
 
-        config["help"] = True if (args.get("help") in present) else False
-
-        config["limit"] = (
-            int(args.get("limit"))
-            if args.get("limit") or args.get("limit") == 0
-            else 100
-        )
-
-        config["nulls"] = args.get("nulls") if args.get("nulls") else "first"
-
-        config["pretty"] = True if (args.get("pretty") in present) else False
-
-        config["prune"] = True if (args.get("prune") in present) else False
+        config.update({
+            "help": args.get("help") in present,
+            "limit": int(args.get("limit")) if (args.get("limit") or args.get("limit") == 0) else 100,
+            "nulls": args.get("nulls") or "first",
+            "pretty": args.get("pretty") in present,
+            "prune": args.get("prune") in present,
+            "universe": args.get("universe"),
+        })
 
         if "random" in args:
-            config["random"] = True if (args.get("random") in present) else False
+            config.update({"random": args.get("random") in present})
 
         if args.get("s"):
-            config["s"] = self.sort_dict(args.get("s"))
+            config.update({"s": self.sort_dict(args.get("s"))})
 
         if "seed" in args:
-            config["seed"] = True if (args.get("seed") in present) else False
-
-        config["universe"] = args.get("universe")
+            config.update({"seed": args.get("seed") in present})
 
         self.config = config
-
         return config
 
-    def character_search_dict(self, characters):
+    def character_search_dict(self, characters: str | list | dict) -> dict:
         """
-        Breaks up Search pattern into recognizable search filter dictionary to processing during filtering stage
-        e.g. spider+man or spider-man,-616
-        :param characters: (str) Character Search String
-        :return: (dict) list of search options
+        Break up a search pattern into a recognisable filter dictionary.
+        e.g. ``spider+man`` or ``spider-man,-616``
+        :param characters: Character search string.
+        :return: Dict with keys ``some``, ``every``, and ``exclude``.
         """
         search_list = self.handle_param_types(characters)
         search = dict()
@@ -155,11 +137,8 @@ class ApiUtils(ServiceUtils):
                 search["some"] = search["some"] + chars
         return search
 
-    def show_help(self):
-        """
-        Helper method to display help text
-        :return: (text) Text based help
-        """
+    def show_help(self) -> str:
+        """Return help text appropriate to the current config."""
         if not self.config.get("characters"):
             return self.help_base
         else:
@@ -167,10 +146,10 @@ class ApiUtils(ServiceUtils):
 
 
 
-    def sort_dict(self, sort_str):
+    def sort_dict(self, sort_str: str | list | dict) -> list:
         """
-        Method converts a specially formatted query param into a list of dictionaries
-        s=name,appearances:desc becomes
+        Convert a specially formatted query param into a list of dicts.
+        ``s=name,appearances:desc`` becomes
         [{
            "column": "name",
            "sort": False,
