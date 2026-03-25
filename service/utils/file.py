@@ -205,13 +205,10 @@ class ReadFile:
         if self.config.get("nulls") == "first" and not self.config.get("prune"):
             if not sort_dir:
                 return (itm is not None, itm != "", itm)
-            else:
-                return (itm is None, itm != "", itm)
-        else:
-            if not sort_dir:
-                return (itm is None, itm != "", itm)
-            else:
-                return (itm is not None, itm != "", itm)
+            return (itm is None, itm != "", itm)
+        if not sort_dir:
+            return (itm is None, itm != "", itm)
+        return (itm is not None, itm != "", itm)
 
     def sort_results(self, results: list, srt_ordr: list | None = None) -> list:
         """

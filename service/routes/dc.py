@@ -214,6 +214,7 @@ def dc_get_by_character(
     prune: Annotated[Optional[str], Query(description=f"Remove keys with null values. {_TF_TEXT}")] = None,
     s: Annotated[Optional[str], Query(description="Columns to sort on.")] = None,
 ):
+    """GET handler for DC universe character search by name."""
     api = ApiUtils()
     safe_chars = _sanitize(characters)
     options = _build_options(
@@ -241,6 +242,7 @@ def dc_get_by_character(
     description=_POST_DESCRIPTION,
 )
 def dc_post(body: CharacterSearchBody):
+    """POST handler for DC universe character search."""
     api = ApiUtils()
     options = body.model_dump(exclude_none=True)
     options.setdefault("universe", "dc")

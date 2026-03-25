@@ -151,4 +151,3 @@ def common_config_options(request):
     if request is not None and data.get(request.param):
         val = data[request.param]
     return val
-
