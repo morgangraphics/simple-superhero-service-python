@@ -164,9 +164,9 @@ def _respond(api: ApiUtils, config: dict):
     description=_BASE_DESCRIPTION,
 )
 def marvel_get_base(
-    characters: Annotated[Optional[str], Query(description="Character(s) to search for. Either a string or Array of strings.")] = None,
+    characters: Annotated[Optional[str], Query(description="Character(s) to search for as a string value (e.g. a single name or a comma-separated list).")] = None,
     format: Annotated[Optional[str], Query(description="Output format (currently only JSON)")] = None,
-    h: Annotated[Optional[str], Query(description="Headers to display. Either a string or Array of strings")] = None,
+    h: Annotated[Optional[str], Query(description="Headers to display as a string value (e.g. a single header or a comma-separated list).")] = None,
     help: Annotated[Optional[str], Query(description=f"List available options. {_TF_TEXT}")] = None,
     limit: Annotated[Optional[str], Query(description="Limit result set. '0' for no limit")] = None,
     nulls: Annotated[Optional[str], Query(description=f"Sort null values first or last in order. {_TF_TEXT}")] = None,
