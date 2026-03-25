@@ -137,7 +137,11 @@ def _respond(api: ApiUtils, config: dict):
 
     try:
         data = ReadFile(config).get_data()
-    except (TypeError, InvalidUsage) as error:
+    except InvalidUsage:
+        # Preserve existing InvalidUsage exceptions without re-wrapping
+        raise
+    except TypeError as error:
+        # Wrap unexpected TypeError in InvalidUsage
         raise InvalidUsage(error)
 
     if config.get("pretty"):
