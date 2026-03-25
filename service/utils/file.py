@@ -228,9 +228,10 @@ class ReadFile:
         srt_dict = srt_ordr if srt_ordr is not None else self.config.get("s")
 
         for i in reversed(srt_dict):
+            col, sort_dir = i["column"], i["sort"]
             results.sort(
-                key=lambda row, col=i["column"], d=i["sort"]: self.sort_i18n_str(row, col, d),
-                reverse=i["sort"],
+                key=lambda row, col=col, d=sort_dir: self.sort_i18n_str(row, col, d),
+                reverse=sort_dir,
             )
 
         return results
