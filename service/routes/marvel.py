@@ -4,10 +4,10 @@ Marvel Comic Book Character Routing Setup
 
 import json
 import re
-from typing import Annotated, Optional
+from typing import Annotated, Literal, Optional
 
 from fastapi import APIRouter, Query
-from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.responses import JSONResponse, PlainTextResponse, Response
 
 from ..models import CharacterSearchBody
 from ..utils import ApiUtils, InvalidUsage, ReadFile
@@ -49,14 +49,14 @@ _POST_DESCRIPTION = _CHAR_DESCRIPTION + """
 
 ---
 
-**character: character can be a string, or an array of strings (preferred)** e.g.
+**characters: characters can be a string, or an array of strings (preferred)** e.g.
 
 ```json
-{ "character": "spider-man,iron man" }
+{ "characters": "spider-man,iron man" }
 ```
 OR
 ```json
-{ "character": ["spider-man", "iron man"] }
+{ "characters": ["spider-man", "iron man"] }
 ```
 
 **h: h can be a string, or an array (preferred)** e.g.
@@ -139,14 +139,22 @@ def _respond(api: ApiUtils, config: dict):
     try:
         data = ReadFile(config).get_data()
     except (TypeError, InvalidUsage) as error:
+        if isinstance(error, InvalidUsage):
+            # Preserve original InvalidUsage, including its status_code and payload
+            raise
         raise InvalidUsage(error)
 
     if config.get("pretty"):
-        body = json.dumps(data, indent=4, separators=(",", ": "), sort_keys=False, ensure_ascii=False)
-    else:
-        body = json.dumps(data, sort_keys=False, ensure_ascii=False)
+        body = json.dumps(
+            data,
+            indent=4,
+            separators=(",", ": "),
+            sort_keys=False,
+            ensure_ascii=False,
+        )
+        return Response(content=body, media_type="application/json")
 
-    return JSONResponse(content=json.loads(body))
+    return JSONResponse(content=data)
 
 
 @bp_marvel.get(
@@ -156,12 +164,12 @@ def _respond(api: ApiUtils, config: dict):
     description=_BASE_DESCRIPTION,
 )
 def marvel_get_base(
-    characters: Annotated[Optional[str], Query(description="Character(s) to search for. Either a string or Array of strings.")] = None,
+    characters: Annotated[Optional[str], Query(description="Character(s) to search for as a string value (e.g. a single name or a comma-separated list).")] = None,
     format: Annotated[Optional[str], Query(description="Output format (currently only JSON)")] = None,
-    h: Annotated[Optional[str], Query(description="Headers to display. Either a string or Array of strings")] = None,
+    h: Annotated[Optional[str], Query(description="Headers to display as a string value (e.g. a single header or a comma-separated list).")] = None,
     help: Annotated[Optional[str], Query(description=f"List available options. {_TF_TEXT}")] = None,
     limit: Annotated[Optional[str], Query(description="Limit result set. '0' for no limit")] = None,
-    nulls: Annotated[Optional[str], Query(description=f"Sort null values first or last in order. {_TF_TEXT}")] = None,
+    nulls: Annotated[Optional[Literal["first", "last"]], Query(description="Sort null values either 'first' or 'last' in the sort order.")] = None,
     pretty: Annotated[Optional[str], Query(description=f"Pretty print the result set. {_TF_TEXT}")] = None,
     prune: Annotated[Optional[str], Query(description=f"Remove keys with null values. {_TF_TEXT}")] = None,
     random: Annotated[Optional[str], Query(description=f"Returns array of random superheros based on limit. {_TF_TEXT}")] = None,
