@@ -49,7 +49,7 @@ class CharacterSearchBody(BaseModel):
     )
     pretty: bool | str | None = Field(None, description=f"Pretty print the result set. {_TF_TEXT}")
     prune: bool | str | None = Field(None, description=f"Remove keys with null values. {_TF_TEXT}")
-    random: bool | str | None = Field(None, description=f"Returns array of random superheros based on limit. {_TF_TEXT}")
+    random: bool | str | None = Field(None, description=f"Returns array of random superheroes based on limit. {_TF_TEXT}")
     s: list[SortParam | dict[str, Any]] | str | None = Field(None, description="Columns to sort on. Either a string or Array of sort objects")
     seed: bool | str | None = Field(None, description=f"Keep the same random characters on multiple requests. {_TF_TEXT}")
     universe: str | None = None
