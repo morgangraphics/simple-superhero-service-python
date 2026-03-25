@@ -1,6 +1,3 @@
-from flask_swagger_ui import get_swaggerui_blueprint
+# Swagger UI is served by FastAPI built-in at /swagger (docs_url).
+# The /static/swagger.json file is mounted via StaticFiles in service/__init__.py.
 
-SWAGGER_URL = "/swagger"
-API_URL = "/static/swagger.json"
-
-bp_swagger = get_swaggerui_blueprint(SWAGGER_URL, API_URL)

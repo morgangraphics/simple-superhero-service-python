@@ -1,5 +1,10 @@
 venv/
+.venv/
 .idea/
+
+# Environment / secrets
+.env
+config/.env
 
 *.pyc
 __pycache__/

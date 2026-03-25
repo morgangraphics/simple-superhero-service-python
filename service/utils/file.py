@@ -8,7 +8,7 @@ locale.setlocale(locale.LC_ALL, "en_US.utf8")
 
 
 class ReadFile:
-    def __init__(self, cfg):
+    def __init__(self, cfg: dict) -> None:
         self.character_sets = {
             "dc": "dc-wikia-data_csv.csv",
             "marvel": "marvel-wikia-data_csv.csv",
@@ -19,7 +19,7 @@ class ReadFile:
         self.total_data = 0
         self.universe = cfg.get("universe")
 
-    def filter_characters(self, data):
+    def filter_characters(self, data: list) -> list:
         """
          s = ['superman', 'super man', 'super-man'] (some)
          e = ['super', 'man']   (all/every)
@@ -45,7 +45,7 @@ class ReadFile:
 
         return data_in_play
 
-    def filter_data(self, data):
+    def filter_data(self, data: list) -> list:
         """
         Filter data set based on params
         :param data: (list) List of "fixed" data meaning Type coercions, unicode decoding etc
@@ -71,7 +71,7 @@ class ReadFile:
 
         return results
 
-    def filter_limit(self, data):
+    def filter_limit(self, data: list) -> list:
         """
         Filter data based on Limits
         :param data: (list) List of Filtered Character data
@@ -102,7 +102,7 @@ class ReadFile:
 
         return data_in_play
 
-    def get_data(self):
+    def get_data(self) -> list:
         """
         This method will open the correct file and
         1. Coerce data types to the correct type
@@ -183,10 +183,37 @@ class ReadFile:
 
         return self.filter_data(dl)
 
-    def sort_results(self, results, srt_ordr=None):
+    def sort_i18n_str(self, row: dict, sort_col: str, sort_dir: bool) -> tuple:
         """
-        Custom sorting function that allows for sorting None while also maintaining locale aware sorting
-        config["nulls"] will allow for sorting None and putting them at the front or end of the list
+        Locale-aware sort key function for international strings (diacritics).
+        Uses locale.strxfrm so that e.g. 'é' sorts alongside 'e'.
+
+        None handling respects config["nulls"] ("first"|"last") and sort direction
+        (sort_dir=False → ascending / reverse=False, sort_dir=True → descending / reverse=True).
+
+        :param row:      A single character dict from the result set.
+        :param sort_col: The column key to sort on.
+        :param sort_dir: True = descending (reverse=True), False = ascending (reverse=False).
+        :return:         A tuple used as the sort key.
+        """
+        itm = row[sort_col]
+
+        if itm is not None and isinstance(itm, str):
+            itm = locale.strxfrm(itm)
+
+        # Sorting None must also survive sort direction (asc|desc) i.e. reverse=True|False
+        if self.config.get("nulls") == "first" and not self.config.get("prune"):
+            if not sort_dir:
+                return (itm is not None, itm != "", itm)
+            return (itm is None, itm != "", itm)
+        if not sort_dir:
+            return (itm is None, itm != "", itm)
+        return (itm is not None, itm != "", itm)
+
+    def sort_results(self, results: list, srt_ordr: list | None = None) -> list:
+        """
+        Custom sorting function that allows for sorting None while also maintaining locale aware sorting.
+        config["nulls"] will allow for sorting None and putting them at the front or end of the list.
 
         l = [1, 3, 2, 5, 4, None, 7]
         print('Last = ', sorted(l, key=lambda x: (x is None, x)))
@@ -194,40 +221,17 @@ class ReadFile:
         print('First = ', sorted(l, key=lambda x: (x is not None, x)))
         First = [None, 1, 2, 3, 4, 5, 7]
 
-        :param results: (list) e.g. [{'name': 'richard jones (earth-616)', 'appearances': 590, 'year': 1962}]
-        :param srt_ordr: (dict) e.g. {'column': 'name', 'sort': False}
-        :return: (tuple) e.g. (False, True, 1969) tuples are sorted by item type, this means that all non-None elements
-        will come first (since False < True), and then be sorted by value.
+        :param results:  (list) e.g. [{'name': 'richard jones (earth-616)', 'appearances': 590, 'year': 1962}]
+        :param srt_ordr: (list) e.g. [{'column': 'name', 'sort': False}]
+        :return:         Sorted list.
         """
         srt_dict = srt_ordr if srt_ordr is not None else self.config.get("s")
 
         for i in reversed(srt_dict):
-            def sort_i18n_str(row):
-                """
-                A closure to make debugging thins a little easier to debug than a lambda function
-                in the direction list - sort = True|False is referring to reverse in the python sort method
-                :param row: (dict) dictionary with keys sort on
-                :return:
-                """
-                itm = row[i["column"]]
-
-                if itm is not None and isinstance(itm, str):
-                    itm = locale.strxfrm(row[i["column"]])
-
-                # Sorting None must also survive sort direction (asc|desc) or reverse=True|False
-                if self.config.get("nulls") == "first" and not self.config.get("prune"):
-                    # if sort = False (meaning reverse=False meaning sort = ASC = A => Z)
-                    if not i["sort"]:
-                        srt_tpl = (itm is not None, itm != "", itm)
-                    else:
-                        srt_tpl = (itm is None, itm != "", itm)
-                else:
-                    if not i["sort"]:
-                        srt_tpl = (itm is None, itm != "", itm)
-                    else:
-                        srt_tpl = (itm is not None, itm != "", itm)
-
-                return srt_tpl
-            results.sort(key=sort_i18n_str, reverse=i["sort"])
+            col, sort_dir = i["column"], i["sort"]
+            results.sort(
+                key=lambda row, col=col, d=sort_dir: self.sort_i18n_str(row, col, d),
+                reverse=sort_dir,
+            )
 
         return results

@@ -1,63 +1,52 @@
-import os
-from flask import Flask
-from flask import jsonify
 from pathlib import Path
+
+from fastapi import FastAPI, Request
+from fastapi.responses import JSONResponse
+from fastapi.staticfiles import StaticFiles
+
 from .utils import InvalidUsage
 
 
-def create_app(test_config=None, **kwargs):
+_DESCRIPTION = """I needed a self-contained data service (no Database) for testing a number of different \
+scenarios with a diverse and robust dataset that also contains some sparseness.
+
+Service runs on Python and FastAPI.
+
+The service itself and the data contained within service is useful for testing:
+
+1. CORS configuration
+1. Server configuration
+1. Bandwidth
+1. Form population
+1. Data visualization
+1. Stubbing out UI components
+...
+
+Data is the comic book character dataset from \
+[fivethrityeight](https://datahub.io/five-thirty-eight/comic-characters#readme)"""
+
+
+def create_app() -> FastAPI:
     """
-    Flask Service Entry Point/Initialization
-
-    :param test_config:
-    :return:
+    FastAPI application factory.
     """
-    # create and configure the app
-    app = Flask(__name__, instance_relative_config=False)
-
-    @app.errorhandler(InvalidUsage)
-    def handle_invalid_usage(error):
-        """
-        Error Handler
-
-        :param error:
-        :return:
-        """
-        response = jsonify(error.to_dict())
-        response.status_code = error.status_code
-        return response
-
-    default_yaml_path = (
-        Path(__file__).resolve().parent.parent / "config" / "default.cfg"
+    app = FastAPI(
+        title="Simple Superhero Service API Documentation",
+        version="2.0.0",
+        description=_DESCRIPTION,
+        contact={"name": "MORGANGRAPHICS", "url": "https://github.com/morgangraphics"},
+        docs_url="/swagger",
+        redoc_url=None,
+        openapi_url="/openapi.json",
     )
-    environment_yaml_path = ""
-    environment = (
-        kwargs.get("environment")
-        if kwargs.get("environment")
-        else os.environ.get("FLASK_ENV")
-    )
-    path = Path(__file__).resolve().parent.parent / "config" / f"{environment}.cfg"
 
-    if path.is_file():
-        environment_yaml_path = path
+    # Mount the static directory for any static assets
+    static_path = Path(__file__).resolve().parent / "static"
+    app.mount("/static", StaticFiles(directory=str(static_path)), name="static")
 
-    if test_config is None:
-        # Will load Environment Variables from .env file if needed and exists
-        app.config.from_pyfile("settings.py", silent=False)
-        # Will load default application variables
-        app.config.from_pyfile(default_yaml_path, silent=False)
-        # Will override default application variables depending on environment
-        app.config.from_pyfile(environment_yaml_path, silent=True)
-
-    else:
-        # load the test config if passed in
-        app.config.from_mapping(test_config)
-
-    # ensure the instance folder exists
-    try:
-        os.makedirs(app.instance_path)
-    except OSError:
-        pass
+    @app.exception_handler(InvalidUsage)
+    async def handle_invalid_usage(request: Request, error: InvalidUsage) -> JSONResponse:
+        return JSONResponse(status_code=error.status_code, content=error.to_dict())
 
     from service import routes
 

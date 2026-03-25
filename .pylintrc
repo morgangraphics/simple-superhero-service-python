@@ -1,0 +1,37 @@
+[MASTER]
+# Support both old pylint ([MASTER]) and new pylint ([MAIN]) section names.
+py-version = 3.12
+
+[MAIN]
+py-version = 3.12
+
+[BASIC]
+# h and s are intentional short names that map directly to API query parameters.
+# bp_* are idiomatic FastAPI APIRouter instance names, not constants.
+good-names = h,s,e,i,j,k,_,bp_dc,bp_hc,bp_marvel
+
+[DESIGN]
+# _build_options and route handlers mirror the full set of API query parameters.
+max-args = 15
+max-positional-arguments = 15
+
+[MESSAGES CONTROL]
+# redefined-builtin: 'format' and 'help' shadow builtins intentionally — they
+#   are public API query-parameter names that cannot be renamed.
+# line-too-long: not enforced in this project.
+# missing-module-docstring: modules use file-level docstrings only where needed.
+# E0611 (no-name-in-module): false positive — Annotated/Literal exist in
+#   typing since Python 3.8/3.9; old pylint doesn't know this.
+# E1136 (unsubscriptable-object): false positive — list[x]/dict[x] are valid
+#   in Python 3.9+; old pylint doesn't know this.
+# C0326 (bad-whitespace): false positive — PEP 8 requires spaces around '='
+#   for annotated function parameters; old pylint flags these incorrectly.
+# C0330 (wrong-hanging-indentation): removed in pylint 2.6+ but triggers as a
+#   false positive in older Codacy pylint builds.
+disable = redefined-builtin,
+          line-too-long,
+          missing-module-docstring,
+          no-name-in-module,
+          unsubscriptable-object,
+          bad-whitespace,
+          wrong-hanging-indentation
