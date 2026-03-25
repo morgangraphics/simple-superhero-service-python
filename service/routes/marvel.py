@@ -49,14 +49,14 @@ _POST_DESCRIPTION = _CHAR_DESCRIPTION + """
 
 ---
 
-**character: character can be a string, or an array of strings (preferred)** e.g.
+**characters: characters can be a string, or an array of strings (preferred)** e.g.
 
 ```json
-{ "character": "spider-man,iron man" }
+{ "characters": "spider-man,iron man" }
 ```
 OR
 ```json
-{ "character": ["spider-man", "iron man"] }
+{ "characters": ["spider-man", "iron man"] }
 ```
 
 **h: h can be a string, or an array (preferred)** e.g.
