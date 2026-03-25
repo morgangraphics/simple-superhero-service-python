@@ -4,7 +4,7 @@ Marvel Comic Book Character Routing Setup
 
 import json
 import re
-from typing import Annotated, Optional
+from typing import Annotated, Literal, Optional
 
 from fastapi import APIRouter, Query
 from fastapi.responses import JSONResponse, PlainTextResponse, Response
@@ -169,7 +169,7 @@ def marvel_get_base(
     h: Annotated[Optional[str], Query(description="Headers to display as a string value (e.g. a single header or a comma-separated list).")] = None,
     help: Annotated[Optional[str], Query(description=f"List available options. {_TF_TEXT}")] = None,
     limit: Annotated[Optional[str], Query(description="Limit result set. '0' for no limit")] = None,
-    nulls: Annotated[Optional[str], Query(description=f"Sort null values first or last in order. {_TF_TEXT}")] = None,
+    nulls: Annotated[Optional[Literal["first", "last"]], Query(description="Sort null values either 'first' or 'last' in the sort order.")] = None,
     pretty: Annotated[Optional[str], Query(description=f"Pretty print the result set. {_TF_TEXT}")] = None,
     prune: Annotated[Optional[str], Query(description=f"Remove keys with null values. {_TF_TEXT}")] = None,
     random: Annotated[Optional[str], Query(description=f"Returns array of random superheros based on limit. {_TF_TEXT}")] = None,
