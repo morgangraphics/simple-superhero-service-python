@@ -172,7 +172,7 @@ def marvel_get_base(
     nulls: Annotated[Optional[Literal["first", "last"]], Query(description="Sort null values either 'first' or 'last' in the sort order.")] = None,
     pretty: Annotated[Optional[str], Query(description=f"Pretty print the result set. {_TF_TEXT}")] = None,
     prune: Annotated[Optional[str], Query(description=f"Remove keys with null values. {_TF_TEXT}")] = None,
-    random: Annotated[Optional[str], Query(description=f"Returns array of random superheros based on limit. {_TF_TEXT}")] = None,
+    random: Annotated[Optional[str], Query(description=f"Returns array of random superheroes based on limit. {_TF_TEXT}")] = None,
     s: Annotated[Optional[str], Query(description="Columns to sort on.")] = None,
     seed: Annotated[Optional[str], Query(description=f"Keep the same random characters on multiple requests. {_TF_TEXT}")] = None,
     universe: Annotated[Optional[str], Query(include_in_schema=False)] = None,
