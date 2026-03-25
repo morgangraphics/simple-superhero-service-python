@@ -7,7 +7,7 @@ import re
 from typing import Annotated, Optional
 
 from fastapi import APIRouter, Query
-from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.responses import JSONResponse, PlainTextResponse, Response
 
 from ..models import CharacterSearchBody
 from ..utils import ApiUtils, InvalidUsage, ReadFile
@@ -145,11 +145,16 @@ def _respond(api: ApiUtils, config: dict):
         raise InvalidUsage(error)
 
     if config.get("pretty"):
-        body = json.dumps(data, indent=4, separators=(",", ": "), sort_keys=False, ensure_ascii=False)
-    else:
-        body = json.dumps(data, sort_keys=False, ensure_ascii=False)
+        body = json.dumps(
+            data,
+            indent=4,
+            separators=(",", ": "),
+            sort_keys=False,
+            ensure_ascii=False,
+        )
+        return Response(content=body, media_type="application/json")
 
-    return JSONResponse(content=json.loads(body))
+    return JSONResponse(content=data)
 
 
 @bp_marvel.get(
