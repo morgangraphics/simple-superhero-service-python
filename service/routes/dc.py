@@ -203,7 +203,7 @@ def dc_get_by_character(
     h: Annotated[Optional[str], Query(description="Headers to display. Either a string or Array of strings")] = None,
     help: Annotated[Optional[str], Query(description=f"List available options. {_TF_TEXT}")] = None,
     limit: Annotated[Optional[str], Query(description="Limit result set. '0' for no limit")] = None,
-    nulls: Annotated[Optional[str], Query(description=f"Sort null values first or last in order. {_TF_TEXT}")] = None,
+    nulls: Annotated[Optional[str], Query(description="Sort null values either 'first' or 'last' in the sort order. Accepted values: 'first', 'last'.")] = None,
     pretty: Annotated[Optional[str], Query(description=f"Pretty print the result set. {_TF_TEXT}")] = None,
     prune: Annotated[Optional[str], Query(description=f"Remove keys with null values. {_TF_TEXT}")] = None,
     s: Annotated[Optional[str], Query(description="Columns to sort on.")] = None,
