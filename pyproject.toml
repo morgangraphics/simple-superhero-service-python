@@ -34,3 +34,6 @@ testpaths = ["unit"]
 [tool.coverage.run]
 branch = true
 source = ["service"]
+
+[tool.bandit]
+skips = ["B101"]

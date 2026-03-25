@@ -1,8 +1,5 @@
-import pytest
-from fastapi.testclient import TestClient
 from service import create_app
 from service.config import Settings, get_settings
-from service.utils.error import InvalidUsage
 
 
 def test_config():

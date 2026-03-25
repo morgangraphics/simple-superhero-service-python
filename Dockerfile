@@ -27,6 +27,9 @@ ENV PYTHONDONTWRITEBYTECODE=1
 ENV PYTHONUNBUFFERED=1
 # Tell uv to install into the system Python inside the container
 ENV UV_SYSTEM_PYTHON=1
+# TLS certificate paths — leave empty for plain HTTP, set both for HTTPS
+ENV SSL_CERT=""
+ENV SSL_KEY=""
 
 WORKDIR /home/appuser/service
 
@@ -44,7 +47,11 @@ COPY --chown=appuser:appuser . .
 EXPOSE ${PORT}
 
 HEALTHCHECK --interval=30s --timeout=5s --start-period=15s --retries=3 \
-  CMD curl -fsk https://localhost:${PORT}/healthcheck || exit 1
+  CMD if [ -n "$SSL_CERT" ] && [ -n "$SSL_KEY" ]; then \
+        curl -fsk https://localhost:${PORT}/healthcheck; \
+      else \
+        curl -fs http://localhost:${PORT}/healthcheck; \
+      fi || exit 1
 
 # https://github.com/Yelp/dumb-init#usage
 ENTRYPOINT ["/usr/bin/dumb-init", "--"]
