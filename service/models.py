@@ -1,4 +1,4 @@
-from typing import Any
+from typing import Any, Literal
 
 from pydantic import BaseModel, Field
 
@@ -43,7 +43,10 @@ class CharacterSearchBody(BaseModel):
     h: list[str] | str | None = Field(None, description="Headers to display. Either a string or Array of strings")
     help: bool | None = Field(None, description=f"List available options. {_TF_TEXT}")
     limit: int | None = Field(None, description="Limit result set. '0' for no limit")
-    nulls: str | None = Field(None, description=f"Sort null values first or last in order. {_TF_TEXT}")
+    nulls: Literal["first", "last"] | None = Field(
+        None,
+        description='Sort null values either "first" or "last" in the order.',
+    )
     pretty: bool | str | None = Field(None, description=f"Pretty print the result set. {_TF_TEXT}")
     prune: bool | str | None = Field(None, description=f"Remove keys with null values. {_TF_TEXT}")
     random: bool | str | None = Field(None, description=f"Returns array of random superheros based on limit. {_TF_TEXT}")
