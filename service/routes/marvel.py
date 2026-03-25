@@ -35,7 +35,7 @@ Meaning their presence equates to true
 
 e.g. `?pretty` and `?pretty=true` are functionally equivalent
 
-**character: character filters can used like:**
+**characters: character filters can used like:**
 
 `{keyword1},{keyword2}` e.g. iron man,spider-man will search for each character individually
 
@@ -142,7 +142,7 @@ def _respond(api: ApiUtils, config: dict):
         if isinstance(error, InvalidUsage):
             # Preserve original InvalidUsage, including its status_code and payload
             raise
-        raise InvalidUsage(error)
+        raise InvalidUsage(error) from error
 
     if config.get("pretty"):
         body = json.dumps(
@@ -177,6 +177,7 @@ def marvel_get_base(
     seed: Annotated[Optional[str], Query(description=f"Keep the same random characters on multiple requests. {_TF_TEXT}")] = None,
     universe: Annotated[Optional[str], Query(include_in_schema=False)] = None,
 ):
+    """Filterable GET handler for the Marvel universe base endpoint."""
     api = ApiUtils()
     options = _build_options(
         characters=characters,

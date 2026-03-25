@@ -1,4 +1,4 @@
 plugins:
   - remark-lint
   - - remark-lint-ordered-list-marker-value
-    - off
+    - false

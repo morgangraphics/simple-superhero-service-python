@@ -1,0 +1,18 @@
+[MAIN]
+py-version = 3.12
+
+[BASIC]
+# h and s are intentional short names that map directly to API query parameters.
+good-names = h,s,e,i,j,k,_
+
+[DESIGN]
+# _build_options and route handlers mirror the full set of API query parameters.
+max-args = 15
+max-positional-arguments = 15
+
+[MESSAGES CONTROL]
+# 'format' and 'help' shadow builtins intentionally — they are public API
+# query-parameter names whose spelling cannot be changed without breaking clients.
+disable = redefined-builtin,
+          line-too-long,
+          missing-module-docstring

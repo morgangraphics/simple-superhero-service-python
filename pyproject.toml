@@ -37,3 +37,21 @@ source = ["service"]
 
 [tool.bandit]
 skips = ["B101"]
+
+[tool.pylint.main]
+# Inform Pylint of the actual Python version so built-in generics (list[...],
+# dict[...]) and typing additions (Literal, Annotated) are recognised correctly.
+py-version = "3.12"
+
+[tool.pylint.basic]
+# h and s are intentional short names that map directly to API query parameters.
+good-names = ["h", "s", "e", "i", "j", "k", "_"]
+
+[tool.pylint.design]
+# _build_options mirrors the full set of API query parameters (12 args).
+max-args = 15
+
+[tool.pylint.messages_control]
+# 'format' and 'help' shadow builtins intentionally — they are public API
+# query-parameter names whose spelling cannot be changed without breaking clients.
+disable = ["redefined-builtin"]

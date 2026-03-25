@@ -4,10 +4,10 @@ DC Comic Book Character Routing Setup
 
 import json
 import re
-from typing import Annotated, Optional
+from typing import Annotated, Literal, Optional
 
 from fastapi import APIRouter, Query
-from fastapi.responses import JSONResponse, PlainTextResponse
+from fastapi.responses import JSONResponse, PlainTextResponse, Response
 
 from ..models import CharacterSearchBody
 from ..utils import ApiUtils, InvalidUsage, ReadFile
@@ -35,7 +35,7 @@ Meaning their presence equates to true
 
 e.g. `?pretty` and `?pretty=true` are functionally equivalent
 
-**character: character filters can used like:**
+**characters: character filters can used like:**
 
 `{keyword1},{keyword2}` e.g. superman,batman will search for each character individually
 
@@ -119,6 +119,7 @@ def _build_options(
     }.items():
         if val is not None:
             options[key] = val
+    # Presence-style flags: key present (even empty string) means True
     for key, val in {
         "help": help,
         "pretty": pretty,
@@ -137,19 +138,23 @@ def _respond(api: ApiUtils, config: dict):
 
     try:
         data = ReadFile(config).get_data()
-    except InvalidUsage:
-        # Preserve existing InvalidUsage exceptions without re-wrapping
-        raise
-    except TypeError as error:
-        # Wrap unexpected TypeError in InvalidUsage
-        raise InvalidUsage(error)
+    except (TypeError, InvalidUsage) as error:
+        if isinstance(error, InvalidUsage):
+            # Preserve original InvalidUsage, including its status_code and payload
+            raise
+        raise InvalidUsage(error) from error
 
     if config.get("pretty"):
-        body = json.dumps(data, indent=4, separators=(",", ": "), sort_keys=False, ensure_ascii=False)
-    else:
-        body = json.dumps(data, sort_keys=False, ensure_ascii=False)
+        body = json.dumps(
+            data,
+            indent=4,
+            separators=(",", ": "),
+            sort_keys=False,
+            ensure_ascii=False,
+        )
+        return Response(content=body, media_type="application/json")
 
-    return JSONResponse(content=json.loads(body))
+    return JSONResponse(content=data)
 
 
 @bp_dc.get(
@@ -159,12 +164,12 @@ def _respond(api: ApiUtils, config: dict):
     description=_BASE_DESCRIPTION,
 )
 def dc_get_base(
-    characters: Annotated[Optional[str], Query(description="Character(s) to search for. Either a string or Array of strings.")] = None,
+    characters: Annotated[Optional[str], Query(description="Character(s) to search for as a string value (e.g. a single name or a comma-separated list).")] = None,
     format: Annotated[Optional[str], Query(description="Output format (currently only JSON)")] = None,
-    h: Annotated[Optional[str], Query(description="Headers to display. Either a string or Array of strings")] = None,
+    h: Annotated[Optional[str], Query(description="Headers to display as a string value (e.g. a single header or a comma-separated list).")] = None,
     help: Annotated[Optional[str], Query(description=f"List available options. {_TF_TEXT}")] = None,
     limit: Annotated[Optional[str], Query(description="Limit result set. '0' for no limit")] = None,
-    nulls: Annotated[Optional[str], Query(description="Sort null values first or last in order. Accepted values: 'first' or 'last'.")] = None,
+    nulls: Annotated[Optional[Literal["first", "last"]], Query(description="Sort null values either 'first' or 'last' in the sort order.")] = None,
     pretty: Annotated[Optional[str], Query(description=f"Pretty print the result set. {_TF_TEXT}")] = None,
     prune: Annotated[Optional[str], Query(description=f"Remove keys with null values. {_TF_TEXT}")] = None,
     random: Annotated[Optional[str], Query(description=f"Returns array of random superheroes based on limit. {_TF_TEXT}")] = None,
@@ -172,6 +177,7 @@ def dc_get_base(
     seed: Annotated[Optional[str], Query(description=f"Keep the same random characters on multiple requests. {_TF_TEXT}")] = None,
     universe: Annotated[Optional[str], Query(include_in_schema=False)] = None,
 ):
+    """Filterable GET handler for the DC universe base endpoint."""
     api = ApiUtils()
     options = _build_options(
         characters=characters,
