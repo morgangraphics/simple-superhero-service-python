@@ -44,10 +44,12 @@ jobs:
       # Python is an interpreted language so Autobuild is a no-op, but keeping
       # it here means the workflow works if compiled languages are added later.
       - name: Autobuild
-        uses: github/codeql-action/init@5c8a8a642e79153f5d047b10ec1cba1d1cc65699 # v3.35.1
+        uses: github/codeql-action/autobuild@5c8a8a642e79153f5d047b10ec1cba1d1cc65699 # v3.35.1
 
       - name: Perform CodeQL Analysis
         uses: github/codeql-action/analyze@5c8a8a642e79153f5d047b10ec1cba1d1cc65699 # v3.35.1
         with:
           category: "/language:${{ matrix.language }}"
 
+
+  
